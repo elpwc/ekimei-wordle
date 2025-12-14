@@ -129,6 +129,14 @@ export function renderElements(canvas: HTMLCanvasElement, ctx: CanvasRenderingCo
 		ctx.fillStyle = '#c62828';
 		if (el.type === 'node' && el.tags?.railway === 'station') {
 			drawPoint(ctx, { lat: el.lat!, lon: el.lon! }, projector, 5);
+			ctx.fillStyle = 'black';
+			let text = el.tags?.name;
+			if (el.tags?.name.length > 2 && el.tags?.name[0] === '新') {
+				text = '新' + '〇'.repeat(el.tags?.name.length - 1);
+			} else {
+				text = '〇'.repeat(el.tags?.name.length);
+			}
+			drawText(ctx, { lat: el.lat!, lon: el.lon! }, projector, '　' + text + '駅');
 		}
 	});
 
