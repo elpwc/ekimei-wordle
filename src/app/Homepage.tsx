@@ -10,6 +10,7 @@ import { Answer, AnswerStatus } from '@/utils/types';
 import { AnswerList } from '@/components/AnswerList';
 import { Header } from '@/components/Header';
 import ParticlesBg from 'particles-bg';
+import { Footer } from '@/components/Footer';
 
 export default function HomePage() {
 	const hint = useHint();
@@ -123,7 +124,7 @@ export default function HomePage() {
 	return (
 		<>
 			<Header currentStation={currentStation} maskedStationName={maskedStationName} />
-			<main className="flex justify-center pt-2 mb-40">
+			<main className="flex justify-center pt-2 mb-2">
 				<div className="max-w-[400px]">
 					<div className="border-0 border-[#cccccc] w-fit bg-white shadow-md">
 						<canvas ref={canvasRef} width={400} height={300} />
@@ -220,9 +221,7 @@ export default function HomePage() {
 					)}
 				</div>
 			</main>
-			<footer>
-				<p className="w-full text-center text-[12px] text-[#aaa]">Copyright @ elpwc.com 2025</p>
-			</footer>
+			<Footer />
 			{hasBeenCorrect && <ParticlesBg num={10} type="ball" bg={true} />}
 		</>
 	);
