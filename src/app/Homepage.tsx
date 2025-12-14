@@ -31,8 +31,17 @@ export default function HomePage() {
 	const [candidateAnswers, setCandidate] = useState<(typeof JapanStations)[0][]>([]);
 	const [gameStatus, setGameStatus] = useState(GameStatus.Playing);
 
+	const [openURL, setOpenURL] = useState('');
+
 	const maxAnswerCount = 8;
 
+	useEffect(() => {
+		if (openURL !== '') {
+			window.open(openURL);
+			setOpenURL('');
+		}
+	}, [openURL]);
+  
 	useEffect(() => {
 		setTips('駅情報取得中...');
 		const stationAmount = JapanStations.length;
@@ -191,7 +200,7 @@ export default function HomePage() {
 									<button
 										className="w-full flex items-center justify-center gap-2"
 										onClick={() => {
-											window.open(`https://www.google.com/maps?q=${currentStation.name}駅@${currentStation.coord[1]},${currentStation.coord[0]}`, '_blank');
+											setOpenURL(`https://www.google.com/maps?q=${currentStation.name}駅@${currentStation.coord[1]},${currentStation.coord[0]}`);
 										}}
 									>
 										<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -202,7 +211,7 @@ export default function HomePage() {
 									<button
 										className="w-full flex items-center justify-center gap-2"
 										onClick={() => {
-											window.open(`https://ja.wikipedia.org/wiki/${currentStation.name}駅`, '_blank');
+											setOpenURL(`https://ja.wikipedia.org/wiki/${currentStation.name}駅`);
 										}}
 									>
 										<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
