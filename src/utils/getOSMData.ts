@@ -21,8 +21,8 @@ export const getOSMData = (center: LatLon, radius: number = 3000, onDone: (data:
   way["boundary"="administrative"]["admin_level"="4"](around:${radius},${lat},${lon});
   way["boundary"="administrative"]["admin_level"="7"](around:${radius},${lat},${lon});
 
-  way["natural"="water"]["water"="lake"](around:${radius},${lat},${lon});
-  relation["natural"="water"]["water"="lake"](around:${radius},${lat},${lon});
+  way["natural"="water"](around:${radius},${lat},${lon});
+  relation["natural"="water"](around:${radius},${lat},${lon});
 
   way["highway"~"motorway|trunk|primary|secondary|tertiary"](around:${radius},${lat},${lon});
 

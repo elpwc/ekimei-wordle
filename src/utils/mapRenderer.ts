@@ -24,7 +24,7 @@ export function fillSeaByCoastline(ctx: CanvasRenderingContext2D, coastlines: Ov
 	ctx.restore();
 }
 
-export function renderElements(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, elements: OverpassElement[], projector: Projector) {
+export function renderElements(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, elements: OverpassElement[], projector: Projector, isSimple: boolean) {
 	// 	const coastlines = elements.filter((el) => el.type === 'way' && el.tags?.natural === 'coastline');
 	// 	if (coastlines.length > 0) {
 	// 		console.log(coastlines);
@@ -34,22 +34,13 @@ export function renderElements(canvas: HTMLCanvasElement, ctx: CanvasRenderingCo
 
 	elements.forEach((el) => {
 		ctx.font = 'bold 100px';
-		// lake
+
+		// water
 		ctx.fillStyle = '#81d4fa';
-		if (el.geometry && el.tags?.natural === 'water' && el.tags?.water === 'lake' && isPolygon(el)) {
+		if (el.geometry && el.tags?.natural === 'water' && isPolygon(el)) {
 			drawPolygon(ctx, el.geometry, projector);
 		}
 
-		const MAIN_ROADS = new Set(['motorway', 'trunk', 'primary', 'secondary']);
-		ctx.strokeStyle = '#f57c00';
-		ctx.lineWidth = 2;
-		if (el.type === 'way' && el.tags?.highway && MAIN_ROADS.has(el.tags.highway)) {
-			drawLine(ctx, el.geometry!, projector);
-		}
-		if (el.type === 'way' && el.tags?.highway && el.tags.highway === 'tertiary') {
-			ctx.strokeStyle = '#686868';
-			drawLine(ctx, el.geometry!, projector);
-		}
 		ctx.fillStyle = '#a5d6a7';
 		if (el.geometry && (el.tags?.leisure === 'park' || ['grass', 'wood', 'orchard'].includes(el.tags?.landuse ?? '') || ['wood'].includes(el.tags?.natural ?? '')) && isPolygon(el)) {
 			drawPolygon(ctx, el.geometry, projector);
@@ -58,9 +49,27 @@ export function renderElements(canvas: HTMLCanvasElement, ctx: CanvasRenderingCo
 		if (el.geometry && ['farmland'].includes(el.tags?.landuse ?? '') && isPolygon(el)) {
 			drawPolygon(ctx, el.geometry, projector);
 		}
-		ctx.fillStyle = '#929292';
-		if (el.geometry && el.tags?.building === 'yes' && isPolygon(el)) {
-			drawPolygon(ctx, el.geometry, projector);
+	});
+
+	elements.forEach((el) => {
+		ctx.font = 'bold 100px';
+		const MAIN_ROADS = new Set(['motorway', 'trunk', 'primary', 'secondary']);
+		ctx.strokeStyle = '#f57c00';
+		ctx.lineWidth = 2;
+		if (el.type === 'way' && el.tags?.highway && MAIN_ROADS.has(el.tags.highway)) {
+			drawLine(ctx, el.geometry!, projector);
+		}
+		if (!isSimple) {
+			if (el.type === 'way' && el.tags?.highway && el.tags.highway === 'tertiary') {
+				ctx.strokeStyle = '#686868';
+				drawLine(ctx, el.geometry!, projector);
+			}
+		}
+		if (!isSimple) {
+			ctx.fillStyle = '#929292';
+			if (el.geometry && el.tags?.building === 'yes' && isPolygon(el)) {
+				drawPolygon(ctx, el.geometry, projector);
+			}
 		}
 		ctx.fillStyle = '#1976d2';
 		if (el.type === 'node' && (el.tags?.leisure === 'sports_centre' || el.tags?.leisure === 'stadium')) {
@@ -106,11 +115,6 @@ export function renderElements(canvas: HTMLCanvasElement, ctx: CanvasRenderingCo
 			}
 
 			ctx.setLineDash([]);
-		}
-		ctx.strokeStyle = '#0277bd';
-		ctx.lineWidth = 2;
-		if (el.type === 'way' && el.tags?.natural === 'coastline') {
-			drawLine(ctx, el.geometry!, projector);
 		}
 
 		//coastline
@@ -184,11 +188,11 @@ export function renderElements(canvas: HTMLCanvasElement, ctx: CanvasRenderingCo
 	drawPoint(ctx, projector.center, projector, 7);
 }
 
-export function renderOSM(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, data: OverpassResponse, projector: Projector) {
+export function renderOSM(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, data: OverpassResponse, projector: Projector, isSimple: boolean) {
 	ctx.save();
 	ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
 
-	renderElements(canvas, ctx, data.elements, projector);
+	renderElements(canvas, ctx, data.elements, projector, isSimple);
 
 	ctx.restore();
 }
