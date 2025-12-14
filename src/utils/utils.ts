@@ -58,6 +58,10 @@ function randomPickFromTo(from: number, to: number, n: number): number[] {
 }
 
 export function distanceAndBearing(from: [number, number], to: [number, number]): { distanceKm: number; bearingDeg: number } {
+	if (from[0] === to[0] && from[1] === to[1]) {
+		return { distanceKm: 0, bearingDeg: -1 };
+	}
+
 	/** R earth */
 	const R = 6371;
 
@@ -84,8 +88,11 @@ export function distanceAndBearing(from: [number, number], to: [number, number])
 }
 
 export const getEmojiFromDegree = (degree: number) => {
+	if (degree === -1) {
+		return '🎉';
+	}
 	const k = degree / 22.5;
-	console.log(degree, k);
+	//console.log(degree, k);
 	if ((k >= 0 && k < 1) || (k >= 15 && k <= 16)) {
 		return '⬅️';
 	} else if (k >= 1 && k < 3) {
