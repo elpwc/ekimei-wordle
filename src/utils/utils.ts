@@ -106,3 +106,12 @@ export const getEmojiFromDegree = (degree: number) => {
 		return '⏺️';
 	}
 };
+
+export const wordleCompare = (word1: string, word2: string): boolean[] => {
+	const res = [];
+
+	for (let i = 0; i < word1.length; i++) {
+		res.push(word2.includes(word1[i]));
+	}
+	return res;
+};

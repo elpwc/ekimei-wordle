@@ -4,9 +4,11 @@ import { getOSMData } from '@/utils/getOSMData';
 import { renderOSM } from '@/utils/mapRenderer';
 import { useEffect, useRef, useState } from 'react';
 import JapanStations from '@/assets/japanStationsDataWithoutUnused.json';
-import { distanceAndBearing, getEmojiFromDegree, getMaskedStationName } from '@/utils/utils';
+import { distanceAndBearing, getMaskedStationName, wordleCompare } from '@/utils/utils';
 import { useHint } from '@/components/HintProvider';
 import { Answer, AnswerStatus } from '@/utils/types';
+import { AnswerList } from '@/components/AnswerList';
+import { Header } from '@/components/Header';
 
 export default function HomePage() {
 	const hint = useHint();
@@ -77,6 +79,12 @@ export default function HomePage() {
 						isMuniTheSame: currentStation.muni === JapanStations[findIndex].muni,
 						isComTheSame: currentStation.com === JapanStations[findIndex].com,
 						isLineTheSame: currentStation.line === JapanStations[findIndex].line,
+						isStationTheSame: currentStation.name === JapanStations[findIndex].name,
+						prefCharStatus: wordleCompare(JapanStations[findIndex].pref ?? '', currentStation.pref ?? ''),
+						muniCharStatus: wordleCompare(JapanStations[findIndex].muni ?? '', currentStation.muni ?? ''),
+						comCharStatus: wordleCompare(JapanStations[findIndex].com, currentStation.com),
+						lineCharStatus: wordleCompare(JapanStations[findIndex].line, currentStation.line),
+						stationCharStatus: wordleCompare(JapanStations[findIndex].name, currentStation.name),
 					} as Answer,
 				]);
 			}
@@ -87,59 +95,16 @@ export default function HomePage() {
 
 	return (
 		<>
-			<header className="w-full flex justify-between shadow-md bg-[#f8f8f8]">
-				<nav></nav>
-				<div className="flex flex-col items-center">
-					<p className="text-[30px] font-extrabold">
-						<span>{currentStation?.pref + ' '}</span>
-						<span className="text-[#f44336]" style={{ fontSize: currentStation?.name.length > 6 ? '20px' : 'auto' }}>
-							{maskedStationName}
-						</span>
-						駅？
-					</p>
-					<p className="text-[10px] font-extrabold">
-						elpwc.com/<span className="text-[#f44336]">EKI</span>wordle
-					</p>
-				</div>
-				<nav></nav>
-			</header>
+			<Header currentStation={currentStation} maskedStationName={maskedStationName} />
 			<main className="flex justify-center pt-2 mb-40">
 				<div className="max-w-[400px]">
 					<div className="border-0 border-[#cccccc] w-fit  shadow-md">
 						<canvas ref={canvasRef} width={400} height={300} />
 					</div>
 					<p className="text-[#555] text-[16px]">{tips}</p>
-					<div className="flex flex-col gap-2 mt-3">
-						{answers.map((answer, index) => {
-							const station = JapanStations[answer.stationId];
-							return (
-								<div key={'answer_' + index} className="rounded-[4px] w-full p-0 grid grid-cols-4 items-center gap-0.5">
-									<div className=" flex flex-col items-center justify-center gap-0.5">
-										<p className="answerBoxBorder w-full text-center answerText answerTextSmall">{station.pref}</p>
-										<p className="answerBoxBorder w-full text-center answerText answerTextSmall">{station.muni}</p>
-									</div>
-									<div className=" flex flex-col items-center justify-center gap-0.5">
-										<p className="answerBoxBorder w-full text-center answerText answerTextSmall">{station.com.length > 6 ? station.com.substring(0, 6) + '..' : station.com}</p>
-										<p className="answerBoxBorder w-full text-center answerText answerTextSmall">{station.line}</p>
-									</div>
-									<div className="answerBoxBorder flex flex-col items-center justify-center">
-										<p className="text-center">{station.name}駅</p>
-									</div>
-									<div className="answerBoxBorder flex flex-col items-center justify-center">
-										<p>{Math.round(answer.distanceKm)}km</p>
-										<div>{getEmojiFromDegree(answer.bearingDeg)}</div>
-									</div>
-								</div>
-							);
-						})}
-						{Array.from({ length: maxAnswerCount - answers.length }).map((_i, index) => {
-							return (
-								<div key={'blank_' + index} className="bg-[#e5eaea] rounded-[4px] w-full px-2 py-0">
-									{'　'}
-								</div>
-							);
-						})}
-					</div>
+
+					<AnswerList answers={answers} maxAnswerCount={maxAnswerCount} />
+
 					<div className="flex items-center">
 						<div className="w-full border-2 border-r-0 border-[#ccc] flex text-[20px] my-3 p-2 rounded-l-sm">
 							<input

@@ -23,19 +23,17 @@ export interface Projector {
 	scale: number; // px per degree
 }
 
-export enum AnswerStatus{
+export enum AnswerStatus {
 	OutOfPref,
 	TheSamePref,
 	TheSameLine,
 	TheSameCom,
 	TheSameMuni,
 
-	Correct
+	Correct,
 }
 
-export const AnswerStatusIcons = [
-
-]
+export const AnswerStatusIcons = [];
 
 export interface Answer {
 	answerText: string;
@@ -47,4 +45,10 @@ export interface Answer {
 	isMuniTheSame: boolean;
 	isComTheSame: boolean;
 	isLineTheSame: boolean;
+	isStationTheSame: boolean;
+	prefCharStatus: boolean[];
+	muniCharStatus: boolean[];
+	comCharStatus: boolean[];
+	lineCharStatus: boolean[];
+	stationCharStatus: boolean[];
 }
