@@ -69,7 +69,7 @@ const AnswerBoxText = ({ text, status }: { text: string; status: boolean[] }) =>
 			return 'black';
 		}
 	};
-	console.log(status);
+	//console.log(status);
 	return text.split('').map((char, index) => (
 		<span
 			key={index}
