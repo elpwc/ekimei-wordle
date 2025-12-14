@@ -25,7 +25,15 @@ export function fillSeaByCoastline(ctx: CanvasRenderingContext2D, coastlines: Ov
 	ctx.restore();
 }
 
-export function renderElements(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, elements: OverpassElement[], projector: Projector, isSimple: boolean) {
+export function renderElements(
+	canvas: HTMLCanvasElement,
+	ctx: CanvasRenderingContext2D,
+	elements: OverpassElement[],
+	projector: Projector,
+	isSimple: boolean,
+	correctAnswer: any,
+	maskedStationName: string
+) {
 	// 	const coastlines = elements.filter((el) => el.type === 'way' && el.tags?.natural === 'coastline');
 	// 	if (coastlines.length > 0) {
 	// 		console.log(coastlines);
@@ -173,7 +181,7 @@ export function renderElements(canvas: HTMLCanvasElement, ctx: CanvasRenderingCo
 		if (el.type === 'node' && el.tags?.railway === 'station') {
 			drawPoint(ctx, { lat: el.lat!, lon: el.lon! }, projector, 5);
 			ctx.fillStyle = 'black';
-			drawText(ctx, { lat: el.lat!, lon: el.lon! }, projector, '　' + getMaskedStationName(el.tags?.name) + '駅');
+			drawText(ctx, { lat: el.lat!, lon: el.lon! }, projector, '　' + (correctAnswer.name === el.tags?.name ? maskedStationName : getMaskedStationName(el.tags?.name)) + '駅');
 		}
 	});
 
@@ -192,11 +200,11 @@ export function renderElements(canvas: HTMLCanvasElement, ctx: CanvasRenderingCo
 	// drawPoint(ctx, projector.center, projector, 7);
 }
 
-export function renderOSM(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, data: OverpassResponse, projector: Projector, isSimple: boolean) {
+export function renderOSM(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, data: OverpassResponse, projector: Projector, isSimple: boolean, correctAnswer: any, maskedStationName: string) {
 	ctx.save();
 	ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
 
-	renderElements(canvas, ctx, data.elements, projector, isSimple);
+	renderElements(canvas, ctx, data.elements, projector, isSimple, correctAnswer, maskedStationName);
 
 	ctx.restore();
 }

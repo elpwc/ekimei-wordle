@@ -37,9 +37,10 @@ export default function HomePage() {
 		setTips('駅情報取得中...');
 		const stationAmount = JapanStations.length;
 		const randomStation = JapanStations[Math.round(Math.random() * stationAmount)];
-		console.log(randomStation);
+		//console.log(randomStation);
 		setCurrentStation(randomStation);
-		setMaskedStationName(getMaskedStationName(randomStation?.name ?? ''));
+		const masked = getMaskedStationName(randomStation?.name ?? '');
+		setMaskedStationName(masked);
 		const radius = 3000;
 		// 新杉田 coastline test
 		// const lat = 35.3868;
@@ -57,16 +58,25 @@ export default function HomePage() {
 			const ctx = canvasRef.current?.getContext('2d');
 			if (canvasRef.current && ctx) {
 				setTips('地図レンダリング中...');
-				renderOSM(canvasRef.current, ctx, data, { center: { lat, lon }, scale: 10000 }, true);
+				renderOSM(canvasRef.current, ctx, data, { center: { lat, lon }, scale: 10000 }, true, randomStation, masked);
 				setTips('');
 			}
 		});
 	}, []);
 
 	const handleAnswer = (answer: string) => {
-		const findIndex = JapanStations.findIndex((station) => {
-			return station.name === answer;
+		let closestDistance = 500000;
+		let closestId = -1;
+		JapanStations.forEach((station, index) => {
+			if (station.name === answer) {
+				const { distanceKm } = distanceAndBearing(currentStation.coord as [number, number], station.coord as [number, number]);
+				if (distanceKm <= closestDistance) {
+					closestDistance = distanceKm;
+					closestId = index;
+				}
+			}
 		});
+		const findIndex = closestId;
 		if (answer !== currentStation.name) {
 			// x
 			if (findIndex === -1) {

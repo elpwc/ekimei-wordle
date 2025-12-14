@@ -31,9 +31,9 @@ export const Footer = ({}: Props) => {
 				<p className="flex justify-center w-full text-center text-[12px] text-[#aaa]">
 					Inspired by
 					<a className="px-1 text-[#777] flex items-center gap-0.5" target="_blank" href="https://shikuchoson.jp/">
-						<div>
+						<span>
 							市<span className="text-[#3eb370]">区</span>町村
-						</div>
+						</span>
 						<OuterLinkIcon />
 					</a>
 				</p>
