@@ -31,7 +31,7 @@ const getDistanceBorderColor = (distance: number) => {
 export const AnswerBox = ({ answer }: Props) => {
 	const station = JapanStations[answer.stationId];
 	return (
-		<div className="rounded-[4px] w-full p-0 grid grid-cols-12 grid- items-center gap-0.5">
+		<div className="rounded-[4px] w-full p-0 grid grid-cols-12 grid- items-center gap-0.5 bg-[#ffffff11] backdrop-blur-[8px]">
 			<div className="col-span-3 flex flex-col items-center justify-center gap-0.5">
 				<p className={'answerBoxBorder w-full text-center answerText answerTextSmall' + (answer.isPrefTheSame ? ' correct' : answer.prefCharStatus.includes(true) ? ' halfcorrect' : '')}>
 					<AnswerBoxText text={station.pref ?? ''} status={answer.prefCharStatus} />

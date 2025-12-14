@@ -9,6 +9,7 @@ import { useHint } from '@/components/HintProvider';
 import { Answer, AnswerStatus } from '@/utils/types';
 import { AnswerList } from '@/components/AnswerList';
 import { Header } from '@/components/Header';
+import ParticlesBg from 'particles-bg';
 
 export default function HomePage() {
 	const hint = useHint();
@@ -41,7 +42,7 @@ export default function HomePage() {
 		// const lat = 36.13706;
 		// const lon = 139.694089;
 
-		setTips('地図情報取得中...');
+		setTips('地図情報をOpenStreetMapから取得中...');
 		const lat = randomStation.coord[1];
 		const lon = randomStation.coord[0];
 		getOSMData({ lat, lon }, radius, (data) => {
@@ -115,6 +116,7 @@ export default function HomePage() {
 			]);
 
 			setHasBeenCorrect(true);
+			hint('top', '🎊正解！🎉', 'green');
 		}
 	};
 
@@ -123,7 +125,7 @@ export default function HomePage() {
 			<Header currentStation={currentStation} maskedStationName={maskedStationName} />
 			<main className="flex justify-center pt-2 mb-40">
 				<div className="max-w-[400px]">
-					<div className="border-0 border-[#cccccc] w-fit  shadow-md">
+					<div className="border-0 border-[#cccccc] w-fit bg-white shadow-md">
 						<canvas ref={canvasRef} width={400} height={300} />
 					</div>
 					<p className="text-[#555] text-[16px]">{tips}</p>
@@ -189,6 +191,7 @@ export default function HomePage() {
 									style={{ height: 'min-content', padding: '8px 10px', borderRadius: '0 16px 16px 0', backgroundColor: textboxText.length === 0 ? '#adadad' : '#009689' }}
 									onClick={() => {
 										handleAnswer(textboxText);
+										setTextboxText('');
 									}}
 								>
 									<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
@@ -204,7 +207,6 @@ export default function HomePage() {
 											key={candidate.com + candidate.line + candidate.name}
 											className="bg-amber-100 shadow-md px-2 py-1 mt-0.5 flex flex-col cursor-pointer transition-all hover:bg-amber-200 hover:mt-0 hover:mb-0.5"
 											onClick={() => {
-												setTextboxText(candidate.name);
 												handleAnswer(candidate.name);
 											}}
 										>
@@ -221,6 +223,7 @@ export default function HomePage() {
 			<footer>
 				<p className="w-full text-center text-[12px] text-[#aaa]">Copyright @ elpwc.com 2025</p>
 			</footer>
+			{hasBeenCorrect && <ParticlesBg num={10} type="ball" bg={true} />}
 		</>
 	);
 }

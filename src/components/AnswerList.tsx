@@ -15,7 +15,7 @@ export const AnswerList = ({ answers, maxAnswerCount }: Props) => {
 			})}
 			{Array.from({ length: maxAnswerCount - answers.length }).map((_i, index) => {
 				return (
-					<div key={'blank_' + index} className="bg-[#e5eaea] rounded-[4px] w-full px-2 py-2">
+					<div key={'blank_' + index} className="bg-[#e5eaeabd] rounded-[4px] w-full px-2 py-2 backdrop-blur-[8px]">
 						{'　'}
 					</div>
 				);
