@@ -2,11 +2,14 @@
 
 import { Suspense } from 'react';
 import HomePage from './Homepage';
+import { HintProvider } from '@/components/HintProvider';
 
 export default function Home() {
 	return (
 		<Suspense>
-			<HomePage />
+			<HintProvider>
+				<HomePage />
+			</HintProvider>
 		</Suspense>
 	);
 }

@@ -29,6 +29,9 @@ export const getOSMData = (center: LatLon, radius: number = 3000, onDone: (data:
   way["leisure"="park"](around:${radius},${lat},${lon});
   relation["leisure"="park"](around:${radius},${lat},${lon});
 
+  way["landuse"="industrial"](around:${radius},${lat},${lon});
+  relation["landuse"="industrial"](around:${radius},${lat},${lon});
+
   way["landuse"="grass"](around:${radius},${lat},${lon});
   relation["landuse"="grass"](around:${radius},${lat},${lon});
   way["natural"="wood"](around:${radius},${lat},${lon});
@@ -37,9 +40,11 @@ export const getOSMData = (center: LatLon, radius: number = 3000, onDone: (data:
   relation["landuse"="orchard"](around:${radius},${lat},${lon});
   way["landuse"="farmland"](around:${radius},${lat},${lon});
   relation["landuse"="farmland"](around:${radius},${lat},${lon});
+  /*
   way["building"="yes"](around:${radius},${lat},${lon});
   relation["building"="yes"](around:${radius},${lat},${lon});
-
+  */
+ 
   node["natural"="peak"](around:${radius},${lat},${lon});
   way["natural"="peak"](around:${radius},${lat},${lon});
   relation["natural"="peak"](around:${radius},${lat},${lon});

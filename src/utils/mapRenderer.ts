@@ -1,5 +1,6 @@
 import { drawPoint, drawLine, isPolygon, drawPolygon, project, drawText, polygonCentroid } from './renderer';
 import { OverpassElement, Projector, OverpassResponse, LatLon } from './types';
+import { getMaskedStationName } from './utils';
 export function fillSeaByCoastline(ctx: CanvasRenderingContext2D, coastlines: OverpassElement[], projector: Projector, canvasWidth: number, canvasHeight: number) {
 	ctx.save();
 
@@ -52,6 +53,15 @@ export function renderElements(canvas: HTMLCanvasElement, ctx: CanvasRenderingCo
 	});
 
 	elements.forEach((el) => {
+		ctx.fillStyle = '#ffe2fd';
+		if (el.geometry && ['industrial'].includes(el.tags?.landuse ?? '') && isPolygon(el)) {
+			drawPolygon(ctx, el.geometry, projector);
+			ctx.fillStyle = 'black';
+			//const { lat, lon } = polygonCentroid(el.geometry);
+			//drawText(ctx, { lat, lon }, projector, '工業地帯');
+		}
+	});
+	elements.forEach((el) => {
 		ctx.font = 'bold 100px';
 		const MAIN_ROADS = new Set(['motorway', 'trunk', 'primary', 'secondary']);
 		ctx.strokeStyle = '#f57c00';
@@ -78,9 +88,9 @@ export function renderElements(canvas: HTMLCanvasElement, ctx: CanvasRenderingCo
 		ctx.fillStyle = '#c6c6c6';
 		if (el.geometry && el.tags?.amenity === 'school' && isPolygon(el)) {
 			drawPolygon(ctx, el.geometry, projector);
-			ctx.fillStyle = 'black';
-			const { lat, lon } = polygonCentroid(el.geometry);
-			drawText(ctx, { lat, lon }, projector, '文');
+			//ctx.fillStyle = 'black';
+			//const { lat, lon } = polygonCentroid(el.geometry);
+			//drawText(ctx, { lat, lon }, projector, '文');
 		}
 		ctx.fillStyle = 'black';
 		if (el.type === 'node' && el.tags?.amenity === 'place_of_worship' && el.tags?.religion === 'shinto') {
@@ -163,13 +173,7 @@ export function renderElements(canvas: HTMLCanvasElement, ctx: CanvasRenderingCo
 		if (el.type === 'node' && el.tags?.railway === 'station') {
 			drawPoint(ctx, { lat: el.lat!, lon: el.lon! }, projector, 5);
 			ctx.fillStyle = 'black';
-			let text = el.tags?.name;
-			if (el.tags?.name.length > 2 && el.tags?.name[0] === '新') {
-				text = '新' + '〇'.repeat(el.tags?.name.length - 1);
-			} else {
-				text = '〇'.repeat(el.tags?.name.length);
-			}
-			drawText(ctx, { lat: el.lat!, lon: el.lon! }, projector, '　' + text + '駅');
+			drawText(ctx, { lat: el.lat!, lon: el.lon! }, projector, '　' + getMaskedStationName(el.tags?.name) + '駅');
 		}
 	});
 
@@ -184,8 +188,8 @@ export function renderElements(canvas: HTMLCanvasElement, ctx: CanvasRenderingCo
 	ctx.lineTo(canvas.width, canvas.height / 2);
 	ctx.closePath();
 
-	ctx.fillStyle = '#ff2f2f';
-	drawPoint(ctx, projector.center, projector, 7);
+	// ctx.fillStyle = '#ff2f2f';
+	// drawPoint(ctx, projector.center, projector, 7);
 }
 
 export function renderOSM(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, data: OverpassResponse, projector: Projector, isSimple: boolean) {

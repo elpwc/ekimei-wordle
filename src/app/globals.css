@@ -1,26 +1,96 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+	--background: #ffffff;
+	--foreground: #171717;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--font-sans: var(--font-geist-sans);
+	--font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+	:root {
+		--background: #0a0a0a;
+		--foreground: #ededed;
+	}
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+	background: var(--background);
+	color: var(--foreground);
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+button {
+	cursor: pointer;
+	padding: 2px 6px;
+	margin: 2px 0px;
+	border: solid 1px #ccc;
+	border-radius: 4px;
+	background-color: white;
+	transition: all 0.2s;
+}
+
+button.large {
+	padding: 8px 16px;
+	font-weight: 500;
+}
+
+button.primary {
+	color: white;
+	background-color: #2b7fff;
+}
+
+button.primary:hover {
+	background-color: #1447e6;
+}
+
+button.primary.green {
+	color: white;
+	background-color: #009688;
+}
+
+button.primary.green:hover {
+	background-color: #00695f;
+}
+
+button.alert {
+	color: #c10007;
+	background-color: #ffe2e2;
+}
+
+button.alert:hover {
+	background-color: oklch(88.5% 0.062 18.334);
+}
+
+button:hover {
+	background-color: #e6e6e6;
+}
+
+button.disabled {
+	cursor: default;
+	color: gray;
+	background-color: #ccc;
+}
+
+button.disabled:hover {
+	background-color: #ccc;
+}
+
+.answerBoxBorder {
+	height: 100%;
+	border: solid 2px #a2a2a2;
+	border-radius: 4px;
+}
+
+.answerText{
+
+}
+
+.answerTextSmall{
+  font-size: 14px;
 }

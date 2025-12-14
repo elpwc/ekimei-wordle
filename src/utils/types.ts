@@ -22,3 +22,29 @@ export interface Projector {
 	center: LatLon;
 	scale: number; // px per degree
 }
+
+export enum AnswerStatus{
+	OutOfPref,
+	TheSamePref,
+	TheSameLine,
+	TheSameCom,
+	TheSameMuni,
+
+	Correct
+}
+
+export const AnswerStatusIcons = [
+
+]
+
+export interface Answer {
+	answerText: string;
+	stationId: number;
+	distanceKm: number;
+	bearingDeg: number;
+	status: AnswerStatus[];
+	isPrefTheSame: boolean;
+	isMuniTheSame: boolean;
+	isComTheSame: boolean;
+	isLineTheSame: boolean;
+}
