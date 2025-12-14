@@ -89,6 +89,29 @@ export function renderElements(canvas: HTMLCanvasElement, ctx: CanvasRenderingCo
 		if (el.type === 'node' && el.tags?.amenity === 'hospital') {
 			drawText(ctx, { lat: el.lat!, lon: el.lon! }, projector, '㊩');
 		}
+		//admin border
+		ctx.strokeStyle = '#111111';
+		if (el.type === 'way' && el.tags?.boundary === 'administrative') {
+			// pref
+			if (el.tags?.admin_level === '4') {
+				ctx.lineWidth = 2.5;
+				ctx.setLineDash([20, 4, 3, 3, 3, 4]);
+				drawLine(ctx, el.geometry!, projector);
+			}
+			// muni
+			if (el.tags?.admin_level === '7') {
+				ctx.lineWidth = 1.5;
+				ctx.setLineDash([10, 2, 2, 2]);
+				drawLine(ctx, el.geometry!, projector);
+			}
+
+			ctx.setLineDash([]);
+		}
+		ctx.strokeStyle = '#0277bd';
+		ctx.lineWidth = 2;
+		if (el.type === 'way' && el.tags?.natural === 'coastline') {
+			drawLine(ctx, el.geometry!, projector);
+		}
 
 		//coastline
 		ctx.strokeStyle = '#0277bd';
