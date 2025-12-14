@@ -35,6 +35,14 @@ export function drawPoint(ctx: CanvasRenderingContext2D, p: LatLon, projector: P
 	ctx.fill();
 }
 
+export function drawText(ctx: CanvasRenderingContext2D, p: LatLon, projector: Projector, text: string) {
+	const { x, y } = project(p, projector);
+
+	ctx.beginPath();
+	ctx.fillText(text, x, y);
+	ctx.fill();
+}
+
 export function project(p: LatLon, projector: Projector): { x: number; y: number } {
 	const { center, scale } = projector;
 
@@ -51,4 +59,30 @@ export function isPolygon(el: OverpassElement): boolean {
 	const last = el.geometry[el.geometry.length - 1];
 
 	return first.lat === last.lat && first.lon === last.lon;
+}
+
+export function polygonCentroid(points: LatLon[]): { lat: number; lon: number } {
+	let area = 0;
+	let cx = 0;
+	let cy = 0;
+
+	const n = points.length;
+	if (n < 3) return { lat: 0, lon: 0 };
+
+	for (let i = 0; i < n; i++) {
+		const p1 = points[i];
+		const p2 = points[(i + 1) % n];
+		const cross = p1.lat * p2.lon - p2.lat * p1.lon;
+		area += cross;
+		cx += (p1.lat + p2.lat) * cross;
+		cy += (p1.lon + p2.lon) * cross;
+	}
+
+	area *= 0.5;
+	if (area === 0) return { lat: 0, lon: 0 };
+
+	cx /= 6 * area;
+	cy /= 6 * area;
+
+	return { lat: cx, lon: cy };
 }
