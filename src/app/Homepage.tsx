@@ -9,8 +9,12 @@ import { useHint } from '@/components/HintProvider';
 import { Answer, AnswerStatus } from '@/utils/types';
 import { AnswerList } from '@/components/AnswerList';
 import { Header } from '@/components/Header';
-import ParticlesBg from 'particles-bg';
 import { Footer } from '@/components/Footer';
+import dynamic from 'next/dynamic';
+
+const ParticlesBg = dynamic(() => import('particles-bg'), {
+	ssr: false,
+});
 
 enum GameStatus {
 	Playing,
@@ -41,7 +45,7 @@ export default function HomePage() {
 			setOpenURL('');
 		}
 	}, [openURL]);
-  
+
 	useEffect(() => {
 		setTips('駅情報取得中...');
 		const stationAmount = JapanStations.length;
