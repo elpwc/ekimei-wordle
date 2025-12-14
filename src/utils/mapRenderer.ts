@@ -119,6 +119,9 @@ export function renderElements(canvas: HTMLCanvasElement, ctx: CanvasRenderingCo
 		if (el.type === 'way' && el.tags?.natural === 'coastline') {
 			drawLine(ctx, el.geometry!, projector);
 		}
+	});
+
+	elements.forEach((el) => {
 		// railways
 
 		if (el.type === 'way' && el.tags?.railway && el.geometry) {
@@ -141,13 +144,16 @@ export function renderElements(canvas: HTMLCanvasElement, ctx: CanvasRenderingCo
 				} else {
 					// 私铁
 					ctx.strokeStyle = 'black';
-					ctx.lineWidth = 2.5;
+					ctx.lineWidth = 1.5;
 					drawLine(ctx, el.geometry, projector);
+					ctx.lineWidth = 5;
+					ctx.setLineDash([1, 10]);
+					drawLine(ctx, el.geometry, projector);
+					ctx.setLineDash([]);
 				}
 			}
 		}
 	});
-
 	elements.forEach((el) => {
 		ctx.fillStyle = '#c62828';
 		if (el.type === 'node' && el.tags?.railway === 'station') {
