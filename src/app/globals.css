@@ -80,17 +80,3 @@ button.disabled {
 button.disabled:hover {
 	background-color: #ccc;
 }
-
-.answerBoxBorder {
-	height: 100%;
-	border: solid 2px #a2a2a2;
-	border-radius: 4px;
-}
-
-.answerText{
-
-}
-
-.answerTextSmall{
-  font-size: 14px;
-}

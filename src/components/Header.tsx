@@ -1,7 +1,4 @@
-import { Answer } from '@/utils/types';
 import JapanStations from '@/assets/japanStationsDataWithoutUnused.json';
-import { getEmojiFromDegree } from '@/utils/utils';
-import { AnswerBox } from './AnswerBox';
 
 interface Props {
 	currentStation: (typeof JapanStations)[0];
