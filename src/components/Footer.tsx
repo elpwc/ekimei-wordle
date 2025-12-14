@@ -25,7 +25,7 @@ export const Footer = ({}: Props) => {
 						</svg>
 					</a>
 				</div>
-				<p className=" text-[12px] text-[#777]">Dev by @elpwc</p>
+				<p className=" text-[12px] text-[#777]">Dev by @elpwc/uni</p>
 			</div>
 			<div className="flex flex-col items-center">
 				<p className="flex justify-center w-full text-center text-[12px] text-[#aaa]">

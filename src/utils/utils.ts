@@ -1,4 +1,4 @@
-import { LatLon } from './types';
+import { Answer, LatLon } from './types';
 
 export const getMaskedStationName = (stationName: string) => {
 	if (stationName.length > 2 && stationName[0] === '新') {
@@ -114,11 +114,85 @@ export const getEmojiFromDegree = (degree: number) => {
 	}
 };
 
+export const getDistanceBorderColor = (distance: number) => {
+	if (distance === 0) {
+		return '#1d9222';
+	} else if (distance > 0 && distance <= 5) {
+		return '#6cbd28';
+	} else if (distance > 5 && distance <= 10) {
+		return '#bdba28';
+	} else if (distance > 10 && distance <= 25) {
+		return '#c6b90e';
+	} else if (distance > 25 && distance <= 50) {
+		return '#e19c10';
+	} else if (distance > 50 && distance <= 100) {
+		return '#f26500';
+	} else if (distance > 100 && distance <= 300) {
+		return '#f20000';
+	} else if (distance > 300 && distance <= 500) {
+		return '#8e0000';
+	} else if (distance > 500) {
+		return '#470012';
+	}
+};
+
+export const getEmojiFromDistance = (distance: number) => {
+	const list = ['🅾️', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
+	return list[Math.round(distance / 10) > 10 ? 10 : Math.round(distance / 10)];
+};
+
 export const wordleCompare = (word1: string, word2: string): boolean[] => {
 	const res = [];
 
 	for (let i = 0; i < word1.length; i++) {
 		res.push(word2.includes(word1[i]));
 	}
+	return res;
+};
+
+export const getShareText = (answers: Answer[]) => {
+	let res = '#駅Wordle\r\n';
+	answers.forEach((answer) => {
+		if (answer.isPrefTheSame) {
+			res += '🟩';
+		} else if (answer.prefCharStatus.includes(true)) {
+			res += '🟨';
+		} else {
+			res += '⬜';
+		}
+		if (answer.isMuniTheSame) {
+			res += '🟩';
+		} else if (answer.muniCharStatus.includes(true)) {
+			res += '🟨';
+		} else {
+			res += '⬜';
+		}
+		if (answer.isComTheSame) {
+			res += '🟩';
+		} else if (answer.comCharStatus.includes(true)) {
+			res += '🟨';
+		} else {
+			res += '⬜';
+		}
+		if (answer.isLineTheSame) {
+			res += '🟩';
+		} else if (answer.lineCharStatus.includes(true)) {
+			res += '🟨';
+		} else {
+			res += '⬜';
+		}
+		if (answer.isStationTheSame) {
+			res += '🟩';
+		} else if (answer.stationCharStatus.includes(true)) {
+			res += '🟨';
+		} else {
+			res += '⬜';
+		}
+
+		res += getEmojiFromDegree(answer.bearingDeg) + getEmojiFromDistance(answer.distanceKm);
+		res += '\r\n';
+	});
+	res += 'https://elpwc.com/ekiwordle';
+
 	return res;
 };

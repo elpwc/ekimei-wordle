@@ -1,32 +1,10 @@
 import { Answer } from '@/utils/types';
 import JapanStations from '@/assets/japanStationsDataWithoutUnused.json';
-import { getEmojiFromDegree } from '@/utils/utils';
+import { getDistanceBorderColor, getEmojiFromDegree } from '@/utils/utils';
 
 interface Props {
 	answer: Answer;
 }
-
-const getDistanceBorderColor = (distance: number) => {
-	if (distance === 0) {
-		return '#1d9222';
-	} else if (distance > 0 && distance <= 5) {
-		return '#6cbd28';
-	} else if (distance > 5 && distance <= 10) {
-		return '#bdba28';
-	} else if (distance > 10 && distance <= 25) {
-		return '#c6b90e';
-	} else if (distance > 25 && distance <= 50) {
-		return '#e19c10';
-	} else if (distance > 50 && distance <= 100) {
-		return '#f26500';
-	} else if (distance > 100 && distance <= 300) {
-		return '#f20000';
-	} else if (distance > 300 && distance <= 500) {
-		return '#8e0000';
-	} else if (distance > 500) {
-		return '#470012';
-	}
-};
 
 export const AnswerBox = ({ answer }: Props) => {
 	const station = JapanStations[answer.stationId];
@@ -48,7 +26,11 @@ export const AnswerBox = ({ answer }: Props) => {
 					<AnswerBoxText text={station.line} status={answer.lineCharStatus} />
 				</p>
 			</div>
-			<div className={'col-span-3 answerBoxBorder flex flex-col items-center justify-center' + (answer.isStationTheSame ? ' correct' : answer.stationCharStatus.includes(true) ? ' halfcorrect' : '')}>
+			<div
+				className={
+					'col-span-3 answerBoxBorder flex flex-col items-center justify-center' + (answer.isStationTheSame ? ' correct' : answer.stationCharStatus.includes(true) ? ' halfcorrect' : '')
+				}
+			>
 				<p className="text-center text-[14px] font-extrabold">
 					<AnswerBoxText text={station.name + '駅'} status={answer.stationCharStatus} />
 				</p>
