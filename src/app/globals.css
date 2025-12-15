@@ -80,3 +80,12 @@ button.disabled {
 button.disabled:hover {
 	background-color: #ccc;
 }
+
+button.noborder {
+	border: none;
+	background-color: transparent;
+}
+
+button.noborder:hover {
+	background-color: #0002;
+}
