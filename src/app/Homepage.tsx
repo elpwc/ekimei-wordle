@@ -274,7 +274,7 @@ export default function HomePage() {
 												tempCandidate = [
 													...tempCandidate,
 													...JapanStations.filter((station) => {
-														const judge = station.name.includes(text);
+														const judge = station.pref !== currentStation.pref && station.name.includes(text);
 														if (judge) {
 															count++;
 														}
@@ -286,7 +286,7 @@ export default function HomePage() {
 												tempCandidate = [
 													...tempCandidate,
 													...JapanStations.filter((station) => {
-														const judge = station.com.includes(text) || station.line.includes(text);
+														const judge = station.pref !== currentStation.pref && (station.com.includes(text) || station.line.includes(text));
 														if (judge) {
 															count++;
 														}
