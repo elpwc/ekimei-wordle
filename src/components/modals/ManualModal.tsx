@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { AnswerBox } from '../AnswerBox';
 import { Modal } from '../Modal';
 import exampleQuestion from '@/assets/example.png';
+import { Divider } from '../Divider';
 
 const example = [
 	{
@@ -84,9 +85,9 @@ export const ManualModal = ({ show, onClose }: Props) => {
 		<Modal title={'🎈説明'} isOpen={show} onClose={onClose}>
 			<div className="flex flex-col gap-4 text-[13px]">
 				<p>
-					<span className="font-extrabold">駅-Wordle</span>は地図を見て駅名を当てるゲームです。
+					<span className="font-extrabold">駅-Wordle</span>は地図を見て真ん中にある駅の名前を当てるゲームです。
 				</p>
-				<p>毎日新しい駅が出題されます。回答は最大6回までです。</p>
+				<p>毎日ランダムに全国の現存駅から出題されます。回答は最大6回までです。</p>
 				<p>
 					入力欄に答えを入力し、
 					<button
@@ -155,6 +156,7 @@ export const ManualModal = ({ show, onClose }: Props) => {
 						</div>
 					</div>
 				</div>
+				<Divider />
 				<div className="flex flex-col items-center mb-10">
 					<p className="text-lg font-bold">例題</p>
 					<Image className="py-4" src={exampleQuestion} alt="Example Question" width={300} height={200} />
