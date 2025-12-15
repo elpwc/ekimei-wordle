@@ -197,9 +197,9 @@ export default function HomePage() {
 									className="w-full primary green py-4! flex items-center justify-center gap-2"
 									onClick={() => {
 										navigator.clipboard
-											.writeText(getShareText(answers))
-											.then(() => hint('top', 'クリップボードにコピーしました！'))
-											.catch((err) => hint('top', 'クリップボードにコピーできませんでした...', 'red', 2000));
+											.writeText(getShareText(answers, currentStation?.pref + ' ' + maskedStationName + '駅？', maxAnswerCount))
+											.then(() => hint('top', 'コピーしました！'))
+											.catch((err) => hint('top', 'コピーできませんでした...', 'red', 2000));
 									}}
 								>
 									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
