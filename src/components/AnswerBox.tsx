@@ -36,7 +36,7 @@ export const AnswerBox = ({ answer }: Props) => {
 				</p>
 			</div>
 			<div className={'col-span-2 answerBoxBorder flex flex-col items-center justify-center'} style={{ borderColor: getDistanceBorderColor(answer.distanceKm) }}>
-				<p>{Math.round(answer.distanceKm)}km</p>
+				<p>{answer.distanceKm < 1 ? Math.round(answer.distanceKm * 1000) + 'm' : Math.round(answer.distanceKm) + 'km'}</p>
 				<div>{getEmojiFromDegree(answer.bearingDeg)}</div>
 			</div>
 		</div>
