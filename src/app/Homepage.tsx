@@ -80,6 +80,10 @@ export default function HomePage() {
 		});
 	}, []);
 
+	useEffect(() => {
+		console.log(answers);
+	}, [answers]);
+
 	const handleAnswer = (answer: string) => {
 		let closestDistance = 500000;
 		let closestId = -1;
