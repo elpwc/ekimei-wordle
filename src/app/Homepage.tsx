@@ -258,6 +258,13 @@ export default function HomePage() {
 											//}
 											setTextboxText(text);
 										}}
+										onKeyDown={(e) => {
+											//console.log(e)
+											if (e.key === 'Enter') {
+												handleAnswer(textboxText);
+												setTextboxText('');
+											}
+										}}
 									/>
 									<span className="font-extrabold">駅</span>
 								</div>
