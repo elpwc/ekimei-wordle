@@ -163,9 +163,9 @@ export default function HomePage() {
 		<>
 			<Header currentStation={currentStation} maskedStationName={maskedStationName} />
 			<main className="flex justify-center pt-2 mb-2">
-				<div className="max-w-[400px]">
+				<div className="max-w-[400px] px-2">
 					<div className="border-0 border-[#cccccc] w-fit bg-white shadow-md">
-						<canvas ref={canvasRef} width={400} height={300} />
+						<canvas className="w-full" ref={canvasRef} width={400} height={300} />
 					</div>
 					<p className="text-[#555] text-[16px]">{tips}</p>
 
