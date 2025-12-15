@@ -250,15 +250,51 @@ export default function HomePage() {
 											//if (text.length > 0) {
 											const max = 20;
 											let count = 0;
-											setCandidate(
-												JapanStations.filter((station) => {
-													const judge = station.pref === currentStation.pref && (station.name.includes(text) || station.com.includes(text) || station.line.includes(text));
-													if (judge) {
-														count++;
-													}
-													return count <= max && judge;
-												})
-											);
+											let tempCandidate = [];
+											tempCandidate = JapanStations.filter((station) => {
+												const judge = station.pref === currentStation.pref && station.name.includes(text);
+												if (judge) {
+													count++;
+												}
+												return count <= max && judge;
+											});
+											if (count < max) {
+												tempCandidate = [
+													...tempCandidate,
+													...JapanStations.filter((station) => {
+														const judge = station.pref === currentStation.pref && (station.com.includes(text) || station.line.includes(text));
+														if (judge) {
+															count++;
+														}
+														return count <= max && judge;
+													}),
+												];
+											}
+											if (count < max) {
+												tempCandidate = [
+													...tempCandidate,
+													...JapanStations.filter((station) => {
+														const judge = station.name.includes(text);
+														if (judge) {
+															count++;
+														}
+														return count <= max && judge;
+													}),
+												];
+											}
+											if (count < max) {
+												tempCandidate = [
+													...tempCandidate,
+													...JapanStations.filter((station) => {
+														const judge = station.com.includes(text) || station.line.includes(text);
+														if (judge) {
+															count++;
+														}
+														return count <= max && judge;
+													}),
+												];
+											}
+											setCandidate(tempCandidate);
 											//}
 											setTextboxText(text);
 										}}
