@@ -4,7 +4,7 @@ export const getMaskedStationName = (stationName: string) => {
 	if (stationName.length > 2 && stationName[0] === '新') {
 		return '新' + '〇'.repeat(stationName.length - 1);
 	}
-	if (Math.random() > 1.05 * stationName.length ** -0.57) {
+	if (Math.random() > stationName.length ** -0.9) {
 		let pickedCount = Math.round(Math.random() * (stationName.length - 1));
 		if (pickedCount === 0) {
 			pickedCount = 1;
