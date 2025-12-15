@@ -234,12 +234,12 @@ export default function HomePage() {
 						</>
 					) : (
 						<>
-							<div className="flex items-center sticky bottom-0 bg-white">
-								<div className="w-full border-2 border-r-0 border-[#ccc] flex text-[20px] my-3 p-2 rounded-l-sm">
+							<div className="flex items-center sticky bottom-0 bg-white mt-3">
+								<div className="w-full border-2 border-r-0 border-[#ccc] flex text-[20px] p-2 rounded-l-sm">
 									<input
 										className="w-full outline-0"
 										type="text"
-										placeholder="?"
+										placeholder="？"
 										value={textboxText}
 										onChange={(e) => {
 											const text = e.target.value;
@@ -248,10 +248,11 @@ export default function HomePage() {
 											let count = 0;
 											setCandidate(
 												JapanStations.filter((station) => {
-													if (station.pref === currentStation.pref && station.name.includes(text)) {
+													const judge = (station.pref === currentStation.pref && station.name.includes(text)) || station.com.includes(text) || station.line.includes(text);
+													if (judge) {
 														count++;
 													}
-													return count <= max && station.pref === currentStation.pref && station.name.includes(text);
+													return count <= max && judge;
 												})
 											);
 											//}
@@ -273,8 +274,9 @@ export default function HomePage() {
 									</svg>
 								</button>
 							</div>
+							<p className="text-[10px] text-[#888]">　思いつかん？駅名・会社名・線路名を入れると下に候補が出ますよ～</p>
 
-							<div className="flex flex-wrap gap-2">
+							<div className="flex flex-wrap gap-2 mt-3">
 								{candidateAnswers.map((candidate) => {
 									return (
 										<div
