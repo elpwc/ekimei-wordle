@@ -153,7 +153,7 @@ export function renderElements(
 					ctx.strokeStyle = 'black';
 					if (el.tags?.name) {
 						if (el.tags?.name.includes('新幹線')) {
-							ctx.strokeStyle = '#08afe1';
+							ctx.strokeStyle = '#037771';
 						}
 					}
 					ctx.lineWidth = 3.5;
@@ -164,14 +164,21 @@ export function renderElements(
 					drawLine(ctx, el.geometry, projector);
 					ctx.setLineDash([]);
 				} else {
-					// 私铁
-					ctx.strokeStyle = 'black';
-					ctx.lineWidth = 1.5;
-					drawLine(ctx, el.geometry, projector);
-					ctx.lineWidth = 5;
-					ctx.setLineDash([1, 10]);
-					drawLine(ctx, el.geometry, projector);
-					ctx.setLineDash([]);
+					if (el.tags?.railway === 'subway') {
+						// 地下铁
+						ctx.strokeStyle = '#1f7197';
+						ctx.lineWidth = 2;
+						drawLine(ctx, el.geometry, projector);
+					} else {
+						// 私铁
+						ctx.strokeStyle = 'black';
+						ctx.lineWidth = 1.5;
+						drawLine(ctx, el.geometry, projector);
+						ctx.lineWidth = 5;
+						ctx.setLineDash([1, 10]);
+						drawLine(ctx, el.geometry, projector);
+						ctx.setLineDash([]);
+					}
 				}
 			}
 		}

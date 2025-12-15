@@ -37,7 +37,7 @@ export default function HomePage() {
 
 	const [openURL, setOpenURL] = useState('');
 
-	const maxAnswerCount = 8;
+	const maxAnswerCount = 6;
 
 	useEffect(() => {
 		if (openURL !== '') {
@@ -62,6 +62,9 @@ export default function HomePage() {
 		// // border test
 		// const lat = 36.13706;
 		// const lon = 139.694089;
+		// metro test, (京都駅)
+		// const lat = 34.987180;
+		// const lon = 135.757427;
 
 		setTips('地図情報をOpenStreetMapから取得中...');
 		const lat = randomStation.coord[1];
