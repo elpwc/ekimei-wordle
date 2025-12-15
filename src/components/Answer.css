@@ -13,6 +13,7 @@
 
 .answerBoxBorder.correct {
 	border: solid 2px #4caf50;
+  background-color: #319735;
 }
 
 .answerBoxBorder.halfcorrect {

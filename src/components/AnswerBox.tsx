@@ -9,21 +9,21 @@ interface Props {
 export const AnswerBox = ({ answer }: Props) => {
 	const station = JapanStations[answer.stationId];
 	return (
-		<div className="rounded-[4px] w-full p-0 grid grid-cols-12 grid- items-center gap-0.5 bg-[#ffffff11] backdrop-blur-[8px]">
+		<div className="rounded-[4px] w-full p-0 grid grid-cols-12 grid- items-center gap-0.5 bg-[#ffffff9e] backdrop-blur-[8px]">
 			<div className="col-span-3 flex flex-col items-center justify-center gap-0.5">
 				<p className={'answerBoxBorder w-full text-center answerText answerTextSmall' + (answer.isPrefTheSame ? ' correct' : answer.prefCharStatus.includes(true) ? ' halfcorrect' : '')}>
-					<AnswerBoxText text={station.pref ?? ''} status={answer.prefCharStatus} />
+					<AnswerBoxText text={station.pref ?? ''} status={answer.prefCharStatus} isAllCorrect={answer.isPrefTheSame} />
 				</p>
 				<p className={'answerBoxBorder w-full text-center answerText answerTextSmall' + (answer.isMuniTheSame ? ' correct' : answer.muniCharStatus.includes(true) ? ' halfcorrect' : '')}>
-					<AnswerBoxText text={station.muni ?? ''} status={answer.muniCharStatus} />
+					<AnswerBoxText text={station.muni ?? ''} status={answer.muniCharStatus} isAllCorrect={answer.isMuniTheSame} />
 				</p>
 			</div>
 			<div className="col-span-4 flex flex-col items-center justify-center gap-0.5">
 				<p className={'answerBoxBorder w-full text-center answerText answerTextSmall' + (answer.isComTheSame ? ' correct' : answer.comCharStatus.includes(true) ? ' halfcorrect' : '')}>
-					<AnswerBoxText text={station.com.length > 6 ? station.com.substring(0, 6) + '..' : station.com} status={answer.comCharStatus} />
+					<AnswerBoxText text={station.com.length > 6 ? station.com.substring(0, 6) + '..' : station.com} status={answer.comCharStatus} isAllCorrect={answer.isComTheSame} />
 				</p>
 				<p className={'answerBoxBorder w-full text-center answerText answerTextSmall' + (answer.isLineTheSame ? ' correct' : answer.lineCharStatus.includes(true) ? ' halfcorrect' : '')}>
-					<AnswerBoxText text={station.line} status={answer.lineCharStatus} />
+					<AnswerBoxText text={station.line} status={answer.lineCharStatus} isAllCorrect={answer.isLineTheSame} />
 				</p>
 			</div>
 			<div
@@ -32,7 +32,7 @@ export const AnswerBox = ({ answer }: Props) => {
 				}
 			>
 				<p className="text-center text-[14px] font-extrabold">
-					<AnswerBoxText text={station.name + '駅'} status={answer.stationCharStatus} />
+					<AnswerBoxText text={station.name + '駅'} status={answer.stationCharStatus} isAllCorrect={answer.isStationTheSame} />
 				</p>
 			</div>
 			<div className={'col-span-2 answerBoxBorder flex flex-col items-center justify-center'} style={{ borderColor: getDistanceBorderColor(answer.distanceKm) }}>
@@ -43,7 +43,7 @@ export const AnswerBox = ({ answer }: Props) => {
 	);
 };
 
-const AnswerBoxText = ({ text, status }: { text: string; status: boolean[] }) => {
+const AnswerBoxText = ({ text, status, isAllCorrect = false }: { text: string; status: boolean[]; isAllCorrect?: boolean }) => {
 	const statusToColor = (status: boolean) => {
 		if (status) {
 			return '#1d9222';
@@ -57,7 +57,7 @@ const AnswerBoxText = ({ text, status }: { text: string; status: boolean[] }) =>
 			key={index}
 			className=""
 			style={{
-				color: statusToColor(status[index]),
+				color: isAllCorrect ? 'white' : statusToColor(status[index]),
 			}}
 		>
 			{char}

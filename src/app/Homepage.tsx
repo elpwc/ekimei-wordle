@@ -190,7 +190,7 @@ export default function HomePage() {
 							)}
 							<div className="flex flex-col gap-4 pt-4">
 								<button
-									className="w-full primary py-2! flex items-center justify-center gap-2"
+									className="w-full primary green py-4! flex items-center justify-center gap-2"
 									onClick={() => {
 										navigator.clipboard
 											.writeText(getShareText(answers))
@@ -201,9 +201,9 @@ export default function HomePage() {
 									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
 										<path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z" />
 									</svg>
-									結果をシェア
+									結果をシェア～♬
 								</button>
-								<div className="flex gap-4">
+								<div className="flex gap-2">
 									<button
 										className="w-full flex items-center justify-center gap-2"
 										onClick={() => {
@@ -248,7 +248,7 @@ export default function HomePage() {
 											let count = 0;
 											setCandidate(
 												JapanStations.filter((station) => {
-													const judge = (station.pref === currentStation.pref && station.name.includes(text)) || station.com.includes(text) || station.line.includes(text);
+													const judge = station.pref === currentStation.pref && (station.name.includes(text) || station.com.includes(text) || station.line.includes(text));
 													if (judge) {
 														count++;
 													}
