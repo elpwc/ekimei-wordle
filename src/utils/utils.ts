@@ -138,7 +138,7 @@ export const getDistanceBorderColor = (distance: number) => {
 
 export const getEmojiFromDistance = (distance: number) => {
 	const list = ['🅾️', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
-	return list[Math.round(distance / 10) > 10 ? 10 : Math.round(distance / 10)];
+	return list[Math.ceil(distance / 10) > 10 ? 10 : Math.ceil(distance / 10)];
 };
 
 export const wordleCompare = (word1: string, word2: string): boolean[] => {
