@@ -11,19 +11,38 @@ export const AnswerBox = ({ answer }: Props) => {
 	return (
 		<div className="rounded-[4px] w-full p-0 grid grid-cols-12 grid- items-center gap-0.5 bg-[#ffffff9e] backdrop-blur-[8px]">
 			<div className="col-span-3 flex flex-col items-center justify-center gap-0.5">
-				<p className={'answerBoxBorder w-full text-center answerText answerTextSmall' + (answer.isPrefTheSame ? ' correct' : answer.prefCharStatus.includes(true) ? ' halfcorrect' : '')}>
-					<AnswerBoxText text={station.pref ?? ''} status={answer.prefCharStatus} isAllCorrect={answer.isPrefTheSame} />
+				<p
+					className={
+						'answerBoxBorder w-full text-center answerText answerTextSmall' +
+						(answer.isPrefTheSame || answer.isStationTheSame ? ' correct' : answer.prefCharStatus.includes(true) ? ' halfcorrect' : '')
+					}
+				>
+					<AnswerBoxText text={station.pref ?? ''} status={answer.prefCharStatus} isAllCorrect={answer.isPrefTheSame || answer.isStationTheSame} />
 				</p>
 				<p className={'answerBoxBorder w-full text-center answerText answerTextSmall' + (answer.isMuniTheSame ? ' correct' : answer.muniCharStatus.includes(true) ? ' halfcorrect' : '')}>
 					<AnswerBoxText text={station.muni ?? ''} status={answer.muniCharStatus} isAllCorrect={answer.isMuniTheSame} />
 				</p>
 			</div>
 			<div className="col-span-4 flex flex-col items-center justify-center gap-0.5">
-				<p className={'answerBoxBorder w-full text-center answerText answerTextSmall' + (answer.isComTheSame ? ' correct' : answer.comCharStatus.includes(true) ? ' halfcorrect' : '')}>
-					<AnswerBoxText text={station.com.length > 6 ? station.com.substring(0, 6) + '..' : station.com} status={answer.comCharStatus} isAllCorrect={answer.isComTheSame} />
+				<p
+					className={
+						'answerBoxBorder w-full text-center answerText answerTextSmall' +
+						(answer.isComTheSame || answer.isStationTheSame ? ' correct' : answer.comCharStatus.includes(true) ? ' halfcorrect' : '')
+					}
+				>
+					<AnswerBoxText
+						text={station.com.length > 6 ? station.com.substring(0, 6) + '..' : station.com}
+						status={answer.comCharStatus}
+						isAllCorrect={answer.isComTheSame || answer.isStationTheSame}
+					/>
 				</p>
-				<p className={'answerBoxBorder w-full text-center answerText answerTextSmall' + (answer.isLineTheSame ? ' correct' : answer.lineCharStatus.includes(true) ? ' halfcorrect' : '')}>
-					<AnswerBoxText text={station.line} status={answer.lineCharStatus} isAllCorrect={answer.isLineTheSame} />
+				<p
+					className={
+						'answerBoxBorder w-full text-center answerText answerTextSmall' +
+						(answer.isLineTheSame || answer.isStationTheSame ? ' correct' : answer.lineCharStatus.includes(true) ? ' halfcorrect' : '')
+					}
+				>
+					<AnswerBoxText text={station.line} status={answer.lineCharStatus} isAllCorrect={answer.isLineTheSame || answer.isStationTheSame} />
 				</p>
 			</div>
 			<div
