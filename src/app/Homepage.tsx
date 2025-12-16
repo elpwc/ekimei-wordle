@@ -4,7 +4,7 @@ import { getOSMData } from '@/utils/getOSMData';
 import { renderOSM } from '@/utils/mapRenderer';
 import { useEffect, useRef, useState } from 'react';
 import JapanStations from '@/assets/japanStationsDataWithoutUnused.json';
-import { distanceAndBearing, getMaskedStationName, getShareText, wordleCompare } from '@/utils/utils';
+import { distanceAndBearing, getMaskedStationName, getRandomStationId, getShareText, wordleCompare } from '@/utils/utils';
 import { useHint } from '@/components/HintProvider';
 import { Answer, AnswerStatus } from '@/utils/types';
 import { AnswerList } from '@/components/AnswerList';
@@ -48,8 +48,7 @@ export default function HomePage() {
 
 	useEffect(() => {
 		setTips('駅情報取得中...');
-		const stationAmount = JapanStations.length;
-		const randomStation = JapanStations[Math.round(Math.random() * stationAmount)];
+		const randomStation = JapanStations[getRandomStationId()];
 		//console.log(randomStation);
 		setCurrentStation(randomStation);
 		const masked = getMaskedStationName(randomStation?.name ?? '');

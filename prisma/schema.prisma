@@ -21,5 +21,6 @@ model questions {
   challenge         Int      @default(0)
   complete          Int      @default(0)
   createdAt         DateTime @default(now())
+  showAt            DateTime @default(now())
   deleted           Boolean  @default(false)
 }

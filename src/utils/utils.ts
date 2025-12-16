@@ -1,4 +1,11 @@
 import { Answer, LatLon } from './types';
+import JapanStations from '@/assets/japanStationsDataWithoutUnused.json';
+
+export const getRandomStationId = () => {
+	const stationAmount = JapanStations.length;
+	const randomStationId = Math.round(Math.random() * stationAmount);
+	return randomStationId;
+};
 
 export const getMaskedStationName = (stationName: string) => {
 	if (stationName.length > 2 && stationName[0] === '新') {
