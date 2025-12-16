@@ -80,5 +80,8 @@ out geom;
 		.then((r) => r.json())
 		.then((data) => {
 			onDone(data);
+		})
+		.catch((e) => {
+			console.log(e);
 		});
 };

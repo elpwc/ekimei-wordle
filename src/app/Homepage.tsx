@@ -53,7 +53,7 @@ export default function HomePage() {
 		setCurrentStation(randomStation);
 		const masked = getMaskedStationName(randomStation?.name ?? '');
 		setMaskedStationName(masked);
-		const radius = 3000;
+		const radius = 2000;
 		// 新杉田 coastline test
 		// const lat = 35.3868;
 		// const lon = 139.619435;
