@@ -46,14 +46,28 @@ export default function HomePage() {
 		}
 	}, [openURL]);
 
-	useEffect(() => {
-		setTips('駅情報取得中...');
+	const initGame = () => {
+		const ctx = canvasRef.current?.getContext('2d');
+		ctx?.clearRect(0, 0, canvasRef.current?.width || 1000, canvasRef.current?.height || 1000);
+		setAnswers([]);
+		setGameStatus(GameStatus.Playing);
+		setTextboxText('');
+		setCandidate([]);
+
+		const interval1 = setInterval(() => {
+			setTips('駅情報取得中' + '.'.repeat(i));
+			i++;
+			if (i >= 4) {
+				i = 1;
+			}
+		}, 200);
+
 		const randomStation = JapanStations[getRandomStationId()];
 		//console.log(randomStation);
 		setCurrentStation(randomStation);
 		const masked = getMaskedStationName(randomStation?.name ?? '');
 		setMaskedStationName(masked);
-		const radius = 2000;
+		const radius = 2500;
 		// 新杉田 coastline test
 		// const lat = 35.3868;
 		// const lon = 139.619435;
@@ -65,18 +79,32 @@ export default function HomePage() {
 		// const lat = 34.987180;
 		// const lon = 135.757427;
 
-		setTips('地図情報をOpenStreetMapから取得中...');
+		clearInterval(interval1);
+
+		let i = 0;
+		const interval2 = setInterval(() => {
+			setTips('地図情報をOpenStreetMapから取得中' + '.'.repeat(i));
+			i++;
+			if (i >= 4) {
+				i = 0;
+			}
+		}, 300);
+
 		const lat = randomStation.coord[1];
 		const lon = randomStation.coord[0];
 		getOSMData({ lat, lon }, radius, (data) => {
-			console.log(data);
-			const ctx = canvasRef.current?.getContext('2d');
+			//console.log(data);
 			if (canvasRef.current && ctx) {
+				clearInterval(interval2);
 				setTips('地図レンダリング中...');
 				renderOSM(canvasRef.current, ctx, data, { center: { lat, lon }, scale: 10000 }, true, randomStation, masked);
 				setTips('');
 			}
 		});
+	};
+
+	useEffect(() => {
+		initGame();
 	}, []);
 
 	useEffect(() => {
@@ -178,7 +206,7 @@ export default function HomePage() {
 						<>
 							{gameStatus === GameStatus.Failed ? (
 								<>
-									<div className="my-4 px-4 py-2 rounded-xl bg-lime-200">
+									<div className="my-4 px-4 py-2 rounded-xl bg-lime-200 shadow-md">
 										<p>⭕正解は、</p>
 										<div>
 											<p className=" w-full text-center answerText answerTextSmall">{currentStation.com + ' ' + currentStation.line}</p>
@@ -191,7 +219,7 @@ export default function HomePage() {
 							) : (
 								<></>
 							)}
-							<div className="flex flex-col gap-4 pt-4">
+							<div className="flex flex-col gap-2 pt-4">
 								<button
 									className="w-full primary green py-4! flex items-center justify-center gap-2"
 									onClick={() => {
@@ -205,6 +233,14 @@ export default function HomePage() {
 										<path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z" />
 									</svg>
 									結果をシェア～♬
+								</button>
+								<button
+									className="w-full primary py-4! flex items-center justify-center gap-2 bg-[#4caf50]! hover:bg-[#237127]!"
+									onClick={() => {
+										initGame();
+									}}
+								>
+									もう一局！
 								</button>
 								<div className="flex gap-2">
 									<button
@@ -323,10 +359,10 @@ export default function HomePage() {
 							<p className="text-[10px] text-[#888]">　思いつかん？駅名・会社名・線路名を入れると下に候補が出ますよ～</p>
 
 							<div className="flex flex-wrap gap-2 mt-3">
-								{candidateAnswers.map((candidate) => {
+								{candidateAnswers.map((candidate, index) => {
 									return (
 										<div
-											key={candidate.com + candidate.line + candidate.name}
+											key={candidate.com + candidate.line + candidate.name + index}
 											className="bg-amber-100 shadow-md px-2 py-1 mt-0.5 flex flex-col cursor-pointer transition-all hover:bg-amber-200 hover:mt-0 hover:mb-0.5"
 											onClick={() => {
 												handleAnswer(candidate.name);

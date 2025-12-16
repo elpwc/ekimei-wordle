@@ -73,15 +73,17 @@ export const getOSMData = (center: LatLon, radius: number = 3000, onDone: (data:
 
 out geom;
 `;
-	fetch('https://overpass-api.de/api/interpreter', {
-		method: 'POST',
-		body: query,
-	})
-		.then((r) => r.json())
-		.then((data) => {
-			onDone(data);
+
+	try {
+		fetch('https://overpass-api.de/api/interpreter', {
+			method: 'POST',
+			body: query,
 		})
-		.catch((e) => {
-			console.log(e);
-		});
+			.then((r) => r.json())
+			.then((data) => {
+				onDone(data);
+			});
+	} catch (e) {
+		console.log(e);
+	}
 };
