@@ -2,7 +2,7 @@ import JapanStations from '@/assets/japanStationsDataWithoutUnused.json';
 import { renderOSM } from '@/utils/mapRenderer';
 import { LatLon } from './types';
 
-export const getOSMData = (center: LatLon, radius: number = 3000, onDone: (data: any) => void) => {
+export const getOSMData = async (center: LatLon, radius: number = 3000, onDone: (data: any) => void, onError: (errorText: string) => void) => {
 	const { lat, lon } = center;
 
 	const query = `
@@ -75,15 +75,30 @@ out geom;
 `;
 
 	try {
-		fetch('https://overpass-api.de/api/interpreter', {
+		const res = await fetch('https://overpass-api.de/api/interpreter', {
 			method: 'POST',
 			body: query,
-		})
-			.then((r) => r.json())
-			.then((data) => {
-				onDone(data);
-			});
-	} catch (e) {
-		console.log(e);
+		});
+
+		if (!res.ok) {
+			const text = await res.text();
+			console.error('Fetch HTTP error:', res.status, text);
+			switch (res.status) {
+				case 429:
+					onError(res.status + ' Overpass API rate limit exceeded. Please try again later.');
+					break;
+				case 504:
+					onError(res.status + ' Overpass API timeout.');
+					break;
+				default:
+					onError(res.status + ' Overpass API error: ' + res.status);
+			}
+			return;
+		}
+
+		const data = await res.json();
+		onDone(data);
+	} catch (err) {
+		console.error('Fetch network error:', err);
 	}
 };

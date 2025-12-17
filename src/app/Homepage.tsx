@@ -110,24 +110,35 @@ export default function HomePage() {
 
 		const lat = randomStation.coord[1];
 		const lon = randomStation.coord[0];
-		getOSMData({ lat, lon }, radius, (data) => {
-			//console.log(data);
-			if (canvasRef.current && ctx) {
+		getOSMData(
+			{ lat, lon },
+			radius,
+			(data) => {
+				//console.log(data);
+				if (canvasRef.current && ctx) {
+					clearInterval(interval2);
+					setTips('地図レンダリング中...');
+					renderOSM(canvasRef.current, ctx, data, { center: { lat, lon }, scale: 10000 }, true, randomStation, todaysStationMaskedName);
+					setTips('');
+				}
+			},
+			(errorText) => {
 				clearInterval(interval2);
-				setTips('地図レンダリング中...');
-				renderOSM(canvasRef.current, ctx, data, { center: { lat, lon }, scale: 10000 }, true, randomStation, todaysStationMaskedName);
-				setTips('');
+				setTips('地図情報の取得に失敗しました。1秒後にリトライします。(' + errorText + ')');
+				setTimeout(() => {
+					initGame(doGetIdFromServer);
+				}, 1000);
 			}
-		});
+		);
 	};
 
 	useEffect(() => {
 		initGame();
 	}, []);
 
-	useEffect(() => {
-		console.log(answers);
-	}, [answers]);
+	// useEffect(() => {
+	// 	console.log(answers);
+	// }, [answers]);
 
 	const handleAnswer = (answer: string) => {
 		let closestDistance = 500000;
