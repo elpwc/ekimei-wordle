@@ -1,8 +1,28 @@
 import Image from 'next/image';
-import { AnswerBox } from '../AnswerBox';
+import { AnswerBox, AnswerBoxText } from '../AnswerBox';
 import { Modal } from '../Modal';
 import exampleQuestion from '@/assets/example.png';
 import { Divider } from '../Divider';
+import clsx from 'clsx';
+import { getDistanceBorderColor, getEmojiFromDegree } from '@/utils/utils';
+
+const description = {
+	answerText: '沼津',
+	stationId: 5135,
+	distanceKm: 263.2346740503593,
+	bearingDeg: 348.31525580632257,
+	status: [0],
+	isPrefTheSame: false,
+	isMuniTheSame: false,
+	isComTheSame: true,
+	isLineTheSame: false,
+	isStationTheSame: false,
+	prefCharStatus: [false, false, true],
+	muniCharStatus: [false, false, false],
+	comCharStatus: [true, true, true, true],
+	lineCharStatus: [false, false, false, true, true],
+	stationCharStatus: [false, true],
+};
 
 const example = [
 	{
@@ -85,9 +105,9 @@ export const ManualModal = ({ show, onClose }: Props) => {
 		<Modal title={'🎈説明'} isOpen={show} onClose={onClose}>
 			<div className="flex flex-col gap-4 text-[13px]">
 				<p>
-					<span className="font-extrabold">駅-Wordle</span>は地図を見て真ん中にある駅の名前を当てるゲームです。
+					<span className="font-extrabold">駅-Wordle</span>は地図を見て駅の名前を当てるゲームです。
 				</p>
-				<p>毎日ランダムに全国の現存駅から出題されます。回答は最大6回までです。</p>
+				<p>毎日ランダムに全国の現存駅から出題されます。</p>
 				<p>
 					入力欄に答えを入力し、
 					<button
@@ -95,22 +115,31 @@ export const ManualModal = ({ show, onClose }: Props) => {
 						style={{ height: 'min-content', padding: '4px 5px', borderRadius: '0 10px 10px 0', backgroundColor: '#009689' }}
 						onClick={() => {}}
 					>
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+						<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="currentColor" viewBox="0 0 16 16">
 							<path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
 						</svg>
 					</button>
-					をクリックするか、候補から選ぶか、<span className="border-3 p-0.5 border-t-blue-100 border-l-blue-100 border-b-blue-300 border-r-blue-300 bg-blue-200">Enter</span>
-					を押すと、答えが正解かどうかが表示されます。
+					をクリックするか、候補から選ぶか、
+					<span
+						className={clsx(
+							'cursor-pointer border-3 p-0.5 text-[10px]',
+							'border-t-blue-100 border-l-blue-100 border-b-blue-300 border-r-blue-300 bg-blue-200',
+							'hover:border-t-blue-300 hover:border-l-blue-300 hover:border-b-blue-100 hover:border-r-blue-100 hover:bg-blue-200'
+						)}
+					>
+						Enter
+					</span>
+					を押すかのどちらで、答えが正解かどうかが表示されます。回答は最大6回までです。
 					<br />
 					<span className="text-[9px] text-[#555]">出題範囲は、国土交通省国土数値情報ダウンロードサイトの鉄道時系列データ2024年度（令和6年度）版に基づいています</span>
 				</p>
 				<div>
 					<p>地図の凡例は以下となります：</p>
-					<div className="flex flex-col gap-4 pl-4 py-2">
+					<div className="gap-4 pl-1 py-2 grid grid-cols-2">
 						<div>
 							<p>JR在来線</p>
 							<div className="flex">
-								{Array.from({ length: 5 }).map((_, i) => (
+								{Array.from({ length: 3 }).map((_, i) => (
 									<div key={i} className="border-1 border-black h-fit flex">
 										<div className=" w-6 h-1 bg-black"></div>
 										<div className=" w-6 h-1 bg-white"></div>
@@ -121,7 +150,7 @@ export const ManualModal = ({ show, onClose }: Props) => {
 						<div>
 							<p>JR新幹線</p>
 							<div className="flex">
-								{Array.from({ length: 5 }).map((_, i) => (
+								{Array.from({ length: 3 }).map((_, i) => (
 									<div key={i} className="border-1 border-[#037771] h-fit flex">
 										<div className=" w-6 h-1 bg-[#037771]"></div>
 										<div className=" w-6 h-1 bg-white"></div>
@@ -134,7 +163,7 @@ export const ManualModal = ({ show, onClose }: Props) => {
 								私鉄線<span className="text-[10px]">（地下鉄含まず）</span>
 							</p>
 							<div className="flex">
-								{Array.from({ length: 15 }).map((_, i) => (
+								{Array.from({ length: 10 }).map((_, i) => (
 									<div key={i} className="h-fit flex items-center">
 										<div className=" w-3.5 h-0.5 bg-black"></div>
 										<div className=" w-0.5 h-1.5 bg-black"></div>
@@ -145,19 +174,19 @@ export const ManualModal = ({ show, onClose }: Props) => {
 						<div>
 							<p>地下鉄</p>
 							<div className="flex">
-								<div className=" w-60 h-0.5 bg-[#1f7197]"></div>
+								<div className=" w-37 h-0.5 bg-[#1f7197]"></div>
 							</div>
 						</div>
 						<div>
 							<p>ライトレール</p>
 							<div className="flex">
-								<div className=" w-60 h-0.5 bg-[#068862]"></div>
+								<div className=" w-37 h-0.5 bg-[#068862]"></div>
 							</div>
 						</div>
 						<div>
 							<p>路面電車</p>
 							<div className="flex">
-								{Array.from({ length: 12 }).map((_, i) => (
+								{Array.from({ length: 7 }).map((_, i) => (
 									<div key={i} className="h-fit flex items-center">
 										<div className=" w-3.5 h-0.5 bg-[#64099e]"></div>
 										<div className=" w-1.5 h-1.5 bg-[#64099e]"></div>
@@ -166,9 +195,9 @@ export const ManualModal = ({ show, onClose }: Props) => {
 							</div>
 						</div>
 						<div>
-							<p>ケーブルカー・ロープウェイ</p>
+							<p>ケーブル・ロープウェイ</p>
 							<div className="flex">
-								{Array.from({ length: 12 }).map((_, i) => (
+								{Array.from({ length: 7 }).map((_, i) => (
 									<div key={i} className="h-fit flex items-center">
 										<div className=" w-3.5 h-0.5 bg-black"></div>
 										<div className=" w-1.5 h-1.5 bg-black"></div>
@@ -179,13 +208,13 @@ export const ManualModal = ({ show, onClose }: Props) => {
 						<div>
 							<p>自動車道</p>
 							<div className="flex">
-								<div className=" w-60 h-0.5 bg-[#f57c00]"></div>
+								<div className=" w-37 h-0.5 bg-[#f57c00]"></div>
 							</div>
 						</div>
 						<div>
 							<p>都道府県境</p>
 							<div className="flex">
-								{Array.from({ length: 7 }).map((_, i) => (
+								{Array.from({ length: 5 }).map((_, i) => (
 									<div key={i} className="h-fit flex items-center">
 										<div className="mr-1.5 w-3.5 h-0.5 bg-black"></div>
 										<div className="mr-0.5 w-0.5 h-0.5 bg-black"></div>
@@ -197,7 +226,7 @@ export const ManualModal = ({ show, onClose }: Props) => {
 						<div>
 							<p>市区町村境</p>
 							<div className="flex">
-								{Array.from({ length: 8 }).map((_, i) => (
+								{Array.from({ length: 5 }).map((_, i) => (
 									<div key={i} className="h-fit flex items-center">
 										<div className="mr-1.5 w-3.5 h-0.5 bg-black"></div>
 										<div className="mr-1.5 w-0.5 h-0.5 bg-black"></div>
@@ -205,6 +234,62 @@ export const ManualModal = ({ show, onClose }: Props) => {
 								))}
 							</div>
 						</div>
+					</div>
+				</div>
+				<Divider />
+				<div className="flex flex-col items-center">
+					<p className="text-lg font-bold">答えの見方</p>
+					<div>
+						<div className="p-2 mb-4 flex flex-col gap-2">
+							<div className="grid grid-cols-7 items-center justify-center gap-2">
+								<p className={'col-span-2 answerBoxBorder w-full px-2 text-center answerText answerTextSmall'}>
+									<AnswerBoxText text={'南稚内'} status={[false, false, false]} isAllCorrect={false} />
+								</p>
+								<p className="col-span-5">全ての文字は正解と異なります</p>
+							</div>
+							<div className="grid grid-cols-7 items-center justify-center gap-2">
+								<p className={'col-span-2 answerBoxBorder w-full text-center answerText answerTextSmall halfcorrect'}>
+									<AnswerBoxText text={'南稚内'} status={[false, true, true]} isAllCorrect={false} />
+								</p>
+								<p className="col-span-5">緑の文字が正解に含まれています</p>
+							</div>
+							<div className="grid grid-cols-7 items-center justify-center gap-2">
+								<p className={'col-span-2 answerBoxBorder w-full text-center answerText answerTextSmall correct'}>
+									<AnswerBoxText text={'南稚内'} status={[true, true, true]} isAllCorrect={true} />
+								</p>
+								<p className="col-span-5">正解と一致しています</p>
+							</div>
+							<div className="grid grid-cols-7 items-center justify-center gap-2">
+								<div className={'col-span-2 answerBoxBorder flex flex-col items-center justify-center'} style={{ borderColor: getDistanceBorderColor(150) }}>
+									<p>{'150km'}</p>
+									<div>{getEmojiFromDegree(48)}</div>
+								</div>
+								<p className="col-span-5">
+									正解駅の距離と方向を表します
+									<br />
+									ここでは、北西150㎞にあるとの事です
+								</p>
+							</div>
+						</div>
+						<p className="p-2">例えば、下の回答ボックスを見てください：</p>
+						<AnswerBox answer={description} />
+						<p className="p-2">
+							回答欄に「沼津」と入力すると、上のような結果が表示されます。この情報から、正解の駅について以下のことが分かります：
+							<br />
+							・静岡県ではないが、別の「<span className="text-[rgb(29,146,34)]">県</span>」にある
+							<br />
+							・自治体名には「<span className="text-[rgb(29,146,34)]">沼</span>」「<span className="text-[rgb(29,146,34)]">津</span>」「<span className="text-[rgb(29,146,34)]">市</span>
+							」のいずれも含まれていない
+							<br />・<span className="text-[rgb(29,146,34)]">JR東海</span>の駅である
+							<br />
+							・東海道本線ではないが、別の<span className="text-[rgb(29,146,34)]">本線</span>に属している
+							<br />
+							・駅名に「<span className="text-[rgb(29,146,34)]">津</span>」という字が含まれている
+							<br />
+							・沼津駅の⬅️西におよそ263kmの位置にある
+							<br />
+							これらを総合すると、正解は関西本線か紀勢本線のとぢらかの駅だと推測できますね
+						</p>
 					</div>
 				</div>
 				<Divider />
