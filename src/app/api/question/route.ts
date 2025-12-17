@@ -11,8 +11,9 @@ export async function GET(req: NextRequest) {
 	const stationId = searchParams.get('stationId') ? Number(searchParams.get('stationId')) : 0;
 	const challenge = searchParams.get('challenge') ? Number(searchParams.get('challenge')) : 0;
 	const complete = searchParams.get('complete') ? Number(searchParams.get('complete')) : 0;
+	const showAt = searchParams.get('showAt') ? String(searchParams.get('showAt')) : new Date().toISOString();
 	const maskedStationName = searchParams.get('maskedStationName');
-	const orderBy = searchParams.get('orderBy'); // challenge | complete | time
+	const orderBy = searchParams.get('orderBy'); // challenge | complete | date
 	const asc = searchParams.get('asc') === 'asc' ? 'asc' : 'desc'; // asc | desc
 	const page = searchParams.get('page') ? Math.max(Number(searchParams.get('page')), 0) : 0;
 
@@ -25,6 +26,14 @@ export async function GET(req: NextRequest) {
 			...(maskedStationName ? { maskedStationName: maskedStationName } : {}),
 			...(challenge ? { challenge: Number(challenge) } : {}),
 			...(complete ? { complete: Number(complete) } : {}),
+			...(showAt
+				? {
+						showAt: {
+							gte: new Date(new Date(showAt).setHours(0, 0, 0, 0)),
+							lt: new Date(new Date(showAt).setHours(24, 0, 0, 0)),
+						},
+				  }
+				: {}),
 		},
 		orderBy: orderBy === 'challenge' ? { challenge: asc } : orderBy === 'complete' ? { complete: asc } : { showAt: asc },
 		skip,

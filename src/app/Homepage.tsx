@@ -11,6 +11,7 @@ import { AnswerList } from '@/components/AnswerList';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import dynamic from 'next/dynamic';
+import { getQuestionsList } from '@/utils/api';
 
 const ParticlesBg = dynamic(() => import('particles-bg'), {
 	ssr: false,
@@ -46,7 +47,7 @@ export default function HomePage() {
 		}
 	}, [openURL]);
 
-	const initGame = () => {
+	const initGame = async (doGetIdFromServer: boolean = true) => {
 		const ctx = canvasRef.current?.getContext('2d');
 		ctx?.clearRect(0, 0, canvasRef.current?.width || 1000, canvasRef.current?.height || 1000);
 		setAnswers([]);
@@ -54,6 +55,7 @@ export default function HomePage() {
 		setTextboxText('');
 		setCandidate([]);
 
+		let i = 0;
 		const interval1 = setInterval(() => {
 			setTips('駅情報取得中' + '.'.repeat(i));
 			i++;
@@ -62,8 +64,18 @@ export default function HomePage() {
 			}
 		}, 200);
 
-		const randomStation = JapanStations[getRandomStationId()];
-		//console.log(randomStation);
+		let todaysStationId = getRandomStationId();
+		if (doGetIdFromServer) {
+			const todaysStationIds = await getQuestionsList({ showAt: new Date() });
+			console.log(todaysStationIds);
+
+			if (todaysStationIds.length >= 0) {
+				todaysStationId = todaysStationIds[0].stationId;
+			}
+		}
+
+		const randomStation = JapanStations[todaysStationId]; //JapanStations[getRandomStationId()];
+		console.log(randomStation);
 		setCurrentStation(randomStation);
 		const masked = getMaskedStationName(randomStation?.name ?? '');
 		setMaskedStationName(masked);
@@ -81,7 +93,7 @@ export default function HomePage() {
 
 		clearInterval(interval1);
 
-		let i = 0;
+		i = 0;
 		const interval2 = setInterval(() => {
 			setTips('地図情報をOpenStreetMapから取得中' + '.'.repeat(i));
 			i++;
@@ -237,7 +249,7 @@ export default function HomePage() {
 								<button
 									className="w-full primary py-4! flex items-center justify-center gap-2 bg-[#4caf50]! hover:bg-[#237127]!"
 									onClick={() => {
-										initGame();
+										initGame(false);
 									}}
 								>
 									もう一局！

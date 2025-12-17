@@ -2,7 +2,7 @@ import prisma from '@/lib/prisma';
 import { getMaskedStationName, getRandomStationId } from './utils';
 import JapanStations from '@/assets/japanStationsDataWithoutUnused.json';
 
-export async function updateDailyQuestion() {
+export async function updateDailyQuestion(updateDate?: Date) {
 	const setRandomQues = async (date: Date, stationId: number, maskedStationName: string, onDone: (doCreated: boolean) => void) => {
 		let thisDaysQuestion = await prisma.questions.findMany({
 			where: {
@@ -36,35 +36,44 @@ export async function updateDailyQuestion() {
 		}
 	};
 
-	const stationId1 = getRandomStationId();
-	const stationInfo1 = JapanStations[stationId1];
-	const maskedStationName1 = getMaskedStationName(stationInfo1.name);
+	if (updateDate) {
+		const stationId1 = getRandomStationId();
+		const stationInfo1 = JapanStations[stationId1];
+		const maskedStationName1 = getMaskedStationName(stationInfo1.name);
 
-	const today = new Date();
-	setRandomQues(today, stationId1, maskedStationName1, (doCreated1) => {
-		const stationId2 = getRandomStationId();
-		const stationInfo2 = JapanStations[stationId2];
-		const maskedStationName2 = getMaskedStationName(stationInfo2.name);
+		const today = updateDate;
+		setRandomQues(today, stationId1, maskedStationName1, (doCreated1) => {});
+	} else {
+		const stationId1 = getRandomStationId();
+		const stationInfo1 = JapanStations[stationId1];
+		const maskedStationName1 = getMaskedStationName(stationInfo1.name);
 
-		const tomorrow = new Date(today);
-		tomorrow.setDate(tomorrow.getDate() + 1);
-		setRandomQues(tomorrow, stationId2, maskedStationName2, (doCreated2) => {
-			return [
-				{
-					date: today,
-					stationId: stationId1,
-					stationName: stationInfo1.name,
-					maskedStationName: maskedStationName1,
-					hasCreated: doCreated1,
-				},
-				{
-					date: tomorrow,
-					stationId: stationId2,
-					stationName: stationInfo2.name,
-					maskedStationName: maskedStationName2,
-					hasCreated: doCreated2,
-				},
-			];
+		const today = new Date();
+		setRandomQues(today, stationId1, maskedStationName1, (doCreated1) => {
+			const stationId2 = getRandomStationId();
+			const stationInfo2 = JapanStations[stationId2];
+			const maskedStationName2 = getMaskedStationName(stationInfo2.name);
+
+			const tomorrow = new Date(today);
+			tomorrow.setDate(tomorrow.getDate() + 1);
+			setRandomQues(tomorrow, stationId2, maskedStationName2, (doCreated2) => {
+				return [
+					{
+						date: today,
+						stationId: stationId1,
+						stationName: stationInfo1.name,
+						maskedStationName: maskedStationName1,
+						hasCreated: doCreated1,
+					},
+					{
+						date: tomorrow,
+						stationId: stationId2,
+						stationName: stationInfo2.name,
+						maskedStationName: maskedStationName2,
+						hasCreated: doCreated2,
+					},
+				];
+			});
 		});
-	});
+	}
 }

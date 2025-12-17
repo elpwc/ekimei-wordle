@@ -1,4 +1,4 @@
-import { updateDailyQuestion } from '@/utils/apiUtils';
+import { updateDailyQuestion } from '../../utils/apiUtils';
 import { PrismaClient } from '@prisma/client/extension';
 
 const prisma = new PrismaClient();
