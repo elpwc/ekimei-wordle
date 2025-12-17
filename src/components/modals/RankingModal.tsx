@@ -10,7 +10,7 @@ interface Props {
 export const RankingModal = ({ show, onClose }: Props) => {
 	const handleUpdateQuestionBank = () => {
 		const today = new Date();
-		Array.from({ length: 3 }).forEach((_, index) => {
+		Array.from({ length: 1000 }).forEach((_, index) => {
 			const thisDay = new Date(new Date().setDate(today.getDate() + index));
 
 			updateQuestionAPI(thisDay);
