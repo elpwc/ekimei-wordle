@@ -149,9 +149,60 @@ export const ManualModal = ({ show, onClose }: Props) => {
 							</div>
 						</div>
 						<div>
+							<p>ライトレール</p>
+							<div className="flex">
+								<div className=" w-60 h-0.5 bg-[#068862]"></div>
+							</div>
+						</div>
+						<div>
+							<p>路面電車</p>
+							<div className="flex">
+								{Array.from({ length: 12 }).map((_, i) => (
+									<div key={i} className="h-fit flex items-center">
+										<div className=" w-3.5 h-0.5 bg-[#64099e]"></div>
+										<div className=" w-1.5 h-1.5 bg-[#64099e]"></div>
+									</div>
+								))}
+							</div>
+						</div>
+						<div>
+							<p>ケーブルカー・ロープウェイ</p>
+							<div className="flex">
+								{Array.from({ length: 12 }).map((_, i) => (
+									<div key={i} className="h-fit flex items-center">
+										<div className=" w-3.5 h-0.5 bg-black"></div>
+										<div className=" w-1.5 h-1.5 bg-black"></div>
+									</div>
+								))}
+							</div>
+						</div>
+						<div>
 							<p>自動車道</p>
 							<div className="flex">
 								<div className=" w-60 h-0.5 bg-[#f57c00]"></div>
+							</div>
+						</div>
+						<div>
+							<p>都道府県境</p>
+							<div className="flex">
+								{Array.from({ length: 7 }).map((_, i) => (
+									<div key={i} className="h-fit flex items-center">
+										<div className="mr-1.5 w-3.5 h-0.5 bg-black"></div>
+										<div className="mr-0.5 w-0.5 h-0.5 bg-black"></div>
+										<div className="mr-1.5 w-0.5 h-0.5 bg-black"></div>
+									</div>
+								))}
+							</div>
+						</div>
+						<div>
+							<p>市区町村境</p>
+							<div className="flex">
+								{Array.from({ length: 8 }).map((_, i) => (
+									<div key={i} className="h-fit flex items-center">
+										<div className="mr-1.5 w-3.5 h-0.5 bg-black"></div>
+										<div className="mr-1.5 w-0.5 h-0.5 bg-black"></div>
+									</div>
+								))}
 							</div>
 						</div>
 					</div>
