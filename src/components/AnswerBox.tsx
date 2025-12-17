@@ -62,7 +62,7 @@ export const AnswerBox = ({ answer }: Props) => {
 	);
 };
 
-const AnswerBoxText = ({ text, status, isAllCorrect = false }: { text: string; status: boolean[]; isAllCorrect?: boolean }) => {
+export const AnswerBoxText = ({ text, status, isAllCorrect = false }: { text: string; status: boolean[]; isAllCorrect?: boolean }) => {
 	const statusToColor = (status: boolean) => {
 		if (status) {
 			return '#1d9222';

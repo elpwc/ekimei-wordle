@@ -104,46 +104,51 @@ export default function HomePage() {
 		// const lon = 139.2685;
 		clearInterval(interval1);
 
-		i = 0;
-		const interval2 = setInterval(() => {
-			setTips('地図情報をOpenStreetMapから取得中' + '.'.repeat(i));
-			i++;
-			if (i >= 4) {
-				i = 0;
-			}
-		}, 300);
-
-		const lat = randomStation.coord[1];
-		const lon = randomStation.coord[0];
-		getOSMData(
-			{ lat, lon },
-			radius,
-			(data) => {
-				//console.log(data);
-				if (canvasRef.current && ctx) {
-					clearInterval(interval2);
-					setTips('地図レンダリング中...');
-					renderOSM(canvasRef.current, ctx, data, { center: { lat, lon }, scale: 10000 }, true, randomStation, todaysStationMaskedName);
-					setTips('');
+		const getData = () => {
+			i = 0;
+			const interval2 = setInterval(() => {
+				setTips('地図情報をOpenStreetMapから取得中' + '.'.repeat(i));
+				i++;
+				if (i >= 4) {
+					i = 0;
 				}
-			},
-			(errorText) => {
-				clearInterval(interval2);
-				setTips('地図情報の取得に失敗しました。1秒後にリトライします。(' + errorText + ')');
-				setTimeout(() => {
-					initGame(doGetIdFromServer);
-				}, 1000);
-			}
-		);
+			}, 300);
+
+			const lat = randomStation.coord[1];
+			const lon = randomStation.coord[0];
+
+			getOSMData(
+				{ lat, lon },
+				radius,
+				(data) => {
+					//console.log(data);
+					if (canvasRef.current && ctx) {
+						clearInterval(interval2);
+						setTips('地図レンダリング中...');
+						renderOSM(canvasRef.current, ctx, data, { center: { lat, lon }, scale: 10000 }, true, randomStation, todaysStationMaskedName);
+						setTips('');
+					}
+				},
+				(errorText) => {
+					clearInterval(interval2);
+					setTips('地図情報の取得に失敗しました。1秒後にリトライします。(' + errorText + ')');
+					setTimeout(() => {
+						getData();
+					}, 1000);
+				}
+			);
+		};
+
+		getData();
 	};
 
 	useEffect(() => {
 		initGame();
 	}, []);
 
-	// useEffect(() => {
-	// 	console.log(answers);
-	// }, [answers]);
+	useEffect(() => {
+		console.log(answers);
+	}, [answers]);
 
 	const handleAnswer = (answer: string) => {
 		let closestDistance = 500000;
