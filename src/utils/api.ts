@@ -1,3 +1,5 @@
+import { getJstDateString } from './utils';
+
 export const API_PREFIX = '/ekiwordle';
 const prefix = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
@@ -39,7 +41,7 @@ export const getQuestionsList = async ({
 	if (stationId >= 0) params.append('stationId', String(stationId));
 	if (challenge >= 0) params.append('challenge', String(challenge));
 	if (complete >= 0) params.append('complete', String(complete));
-	if (showAt) params.append('showAt', showAt.toISOString());
+	if (showAt) params.append('showAt', getJstDateString(showAt));
 	if (orderBy !== OrderType.none) params.append('orderBy', orderBy);
 	if (maskedStationName !== '') params.append('maskedStationName', maskedStationName);
 	if (limit >= 0) params.append('limit', String(limit));
@@ -58,22 +60,19 @@ export const getQuestionsList = async ({
 		});
 };
 
-export const getQuestionByDate = async (id: number) => {
-	try {
-		const response = await request('/api/ticket?ticketId=' + id);
-		const data = await response.json();
-
-		//console.log(data);
-
-		return data ?? null;
-	} catch (e) {
-		console.error('getUploadedTicketById error:', e);
-		return null;
-	}
+export const updateQuestionAPI = async (showAt: Date) => {
+	return await request(`/api/updateQuestion`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ showAt }),
+	});
 };
 
-export const updateQuestionCompleteInfo = async (id: number) => {
-	return await request(`/api/ticket/${id}/like`, {
+export const updateQuestionChallengeInfo = async (id: number, doComplete: boolean) => {
+	return await request(`/api/question/${id}/updateChallenge`, {
 		method: 'POST',
+		body: JSON.stringify({ doComplete }),
 	});
 };

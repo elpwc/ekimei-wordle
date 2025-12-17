@@ -1,4 +1,5 @@
 import prisma from '@/lib/prisma';
+import { getUtcRangeFromJstDay } from '@/utils/utils';
 import { NextRequest } from 'next/server';
 
 /**
@@ -11,7 +12,7 @@ export async function GET(req: NextRequest) {
 	const stationId = searchParams.get('stationId') ? Number(searchParams.get('stationId')) : 0;
 	const challenge = searchParams.get('challenge') ? Number(searchParams.get('challenge')) : 0;
 	const complete = searchParams.get('complete') ? Number(searchParams.get('complete')) : 0;
-	const showAt = searchParams.get('showAt') ? String(searchParams.get('showAt')) : new Date().toISOString();
+	const day = searchParams.get('showAt'); // YYYY-MM-DD
 	const maskedStationName = searchParams.get('maskedStationName');
 	const orderBy = searchParams.get('orderBy'); // challenge | complete | date
 	const asc = searchParams.get('asc') === 'asc' ? 'asc' : 'desc'; // asc | desc
@@ -19,22 +20,24 @@ export async function GET(req: NextRequest) {
 
 	const skip = page * limit;
 
+	const where: any = {
+		deleted: false,
+		...(stationId ? { stationId: Number(stationId) } : {}),
+		...(maskedStationName ? { maskedStationName: maskedStationName } : {}),
+		...(challenge ? { challenge: Number(challenge) } : {}),
+		...(complete ? { complete: Number(complete) } : {}),
+	};
+
+	if (day) {
+		const { startUtc, endUtc } = getUtcRangeFromJstDay(day);
+		where.showAt = {
+			gte: startUtc,
+			lt: endUtc,
+		};
+	}
+
 	let questions = await prisma.questions.findMany({
-		where: {
-			deleted: false,
-			...(stationId ? { stationId: Number(stationId) } : {}),
-			...(maskedStationName ? { maskedStationName: maskedStationName } : {}),
-			...(challenge ? { challenge: Number(challenge) } : {}),
-			...(complete ? { complete: Number(complete) } : {}),
-			...(showAt
-				? {
-						showAt: {
-							gte: new Date(new Date(showAt).setHours(0, 0, 0, 0)),
-							lt: new Date(new Date(showAt).setHours(24, 0, 0, 0)),
-						},
-				  }
-				: {}),
-		},
+		where,
 		orderBy: orderBy === 'challenge' ? { challenge: asc } : orderBy === 'complete' ? { complete: asc } : { showAt: asc },
 		skip,
 		take: limit,

@@ -11,7 +11,7 @@ import { AnswerList } from '@/components/AnswerList';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import dynamic from 'next/dynamic';
-import { getQuestionsList } from '@/utils/api';
+import { getQuestionsList, updateQuestionChallengeInfo } from '@/utils/api';
 
 const ParticlesBg = dynamic(() => import('particles-bg'), {
 	ssr: false,
@@ -36,6 +36,9 @@ export default function HomePage() {
 	const [candidateAnswers, setCandidate] = useState<(typeof JapanStations)[0][]>([]);
 	const [gameStatus, setGameStatus] = useState(GameStatus.Playing);
 
+	// デイリーidの保存とデイリーなのかの確認用、デイリーでない（もう一局の時）と-1と設定
+	const [dailyId, setDailyId] = useState(-1);
+
 	const [openURL, setOpenURL] = useState('');
 
 	const maxAnswerCount = 6;
@@ -54,6 +57,7 @@ export default function HomePage() {
 		setGameStatus(GameStatus.Playing);
 		setTextboxText('');
 		setCandidate([]);
+		setDailyId(-1);
 
 		let i = 0;
 		const interval1 = setInterval(() => {
@@ -65,20 +69,22 @@ export default function HomePage() {
 		}, 200);
 
 		let todaysStationId = getRandomStationId();
+		let todaysStationMaskedName = getMaskedStationName(JapanStations[todaysStationId].name);
 		if (doGetIdFromServer) {
-			const todaysStationIds = await getQuestionsList({ showAt: new Date() });
-			console.log(todaysStationIds);
+			const todaysStationInfos = await getQuestionsList({ showAt: new Date() });
+			//console.log(todaysStationInfos);
 
-			if (todaysStationIds.length >= 0) {
-				todaysStationId = todaysStationIds[0].stationId;
+			if (todaysStationInfos.length > 0) {
+				todaysStationId = todaysStationInfos[0].stationId;
+				todaysStationMaskedName = todaysStationInfos[0].maskedStationName;
+				setDailyId(todaysStationInfos[0].id);
 			}
 		}
 
 		const randomStation = JapanStations[todaysStationId]; //JapanStations[getRandomStationId()];
-		console.log(randomStation);
+		//console.log(randomStation);
 		setCurrentStation(randomStation);
-		const masked = getMaskedStationName(randomStation?.name ?? '');
-		setMaskedStationName(masked);
+		setMaskedStationName(todaysStationMaskedName);
 		const radius = 2500;
 		// 新杉田 coastline test
 		// const lat = 35.3868;
@@ -109,7 +115,7 @@ export default function HomePage() {
 			if (canvasRef.current && ctx) {
 				clearInterval(interval2);
 				setTips('地図レンダリング中...');
-				renderOSM(canvasRef.current, ctx, data, { center: { lat, lon }, scale: 10000 }, true, randomStation, masked);
+				renderOSM(canvasRef.current, ctx, data, { center: { lat, lon }, scale: 10000 }, true, randomStation, todaysStationMaskedName);
 				setTips('');
 			}
 		});
@@ -147,6 +153,9 @@ export default function HomePage() {
 				if (answers.length + 1 >= maxAnswerCount) {
 					setGameStatus(GameStatus.Failed);
 					hint('top', `正解は「${currentStation.name}駅」でしたー`, 'orange');
+					if (dailyId !== -1) {
+						updateQuestionChallengeInfo(dailyId, false).then(() => {});
+					}
 				}
 
 				const { distanceKm, bearingDeg } = distanceAndBearing(currentStation.coord as [number, number], JapanStations[findIndex].coord as [number, number]);
@@ -198,6 +207,9 @@ export default function HomePage() {
 			]);
 
 			setGameStatus(GameStatus.Correct);
+			if (dailyId !== -1) {
+				updateQuestionChallengeInfo(dailyId, true).then(() => {});
+			}
 			hint('top', '🎊正解！🎉', 'green');
 		}
 	};

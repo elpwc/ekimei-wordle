@@ -21,6 +21,7 @@ export async function updateDailyQuestion(updateDate?: Date) {
 		if (thisDaysQuestion.length === 0) {
 			const createData: any = {
 				stationId,
+				name: JapanStations[stationId].name,
 				maskedStationName,
 				showAt: new Date(date.setHours(0, 0, 0, 0)),
 			};

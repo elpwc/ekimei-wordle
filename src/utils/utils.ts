@@ -204,3 +204,16 @@ export const getShareText = (answers: Answer[], maskedPrefAndStationName: string
 
 	return res;
 };
+
+export function getJstDateString(date = new Date()) {
+	const jst = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+	return jst.toISOString().slice(0, 10); // YYYY-MM-DD
+}
+
+export function getUtcRangeFromJstDay(jstDay: string) {
+	// jstDay: '2025-12-17'
+	const [y, m, d] = jstDay.split('-').map(Number);
+	const startUtc = new Date(Date.UTC(y, m - 1, d, 0, 0, 0, 0));
+	const endUtc = new Date(Date.UTC(y, m - 1, d + 1, 0, 0, 0, 0));
+	return { startUtc, endUtc };
+}

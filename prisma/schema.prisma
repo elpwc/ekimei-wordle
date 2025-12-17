@@ -17,6 +17,7 @@ datasource db {
 model questions {
   id                Int      @id @default(autoincrement())
   stationId         Int      @default(0)
+  name              String   @default("")
   maskedStationName String   @default("")
   challenge         Int      @default(0)
   complete          Int      @default(0)
