@@ -21,7 +21,7 @@ export const RankingModal = ({ show, onClose }: Props) => {
 		<Modal title={'過去問と正解率'} isOpen={show} onClose={onClose}>
 			<div className="flex flex-col gap-4">
 				<p>開発中、お楽しみに</p>
-				<button onClick={handleUpdateQuestionBank}>test</button>
+				{/* <button onClick={handleUpdateQuestionBank}>test</button> */}
 			</div>
 		</Modal>
 	);
