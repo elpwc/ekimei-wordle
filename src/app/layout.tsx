@@ -25,7 +25,10 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="ja">
-			<link rel="icon" href="/icon?<generated>" type="image/<generated>" sizes="<generated>" />
+			<head>
+				<link rel="icon" href="/icon?<generated>" type="image/<generated>" sizes="<generated>" />
+				<meta name="google-adsense-account" content="ca-pub-1195280671714046" />
+			</head>
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 				{children}
 				<GoogleAnalytics gaId="G-5DHFBE584G" />
