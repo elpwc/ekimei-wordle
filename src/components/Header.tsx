@@ -2,6 +2,7 @@ import JapanStations from '@/assets/japanStationsDataWithoutUnused.json';
 import { ManualModal } from './modals/ManualModal';
 import { useState } from 'react';
 import { RankingModal } from './modals/RankingModal';
+import { useIsMobile } from '@/utils/hooks';
 
 interface Props {
 	currentStation: (typeof JapanStations)[0];
@@ -10,13 +11,15 @@ interface Props {
 }
 
 export const Header = ({ currentStation, maskedStationName, onChallengeButtonOnClick }: Props) => {
+	const isMobile = useIsMobile();
+
 	const [showManual, setShowManual] = useState(false);
 	const [showRanking, setShowRanking] = useState(false);
 	return (
 		<header className="w-full flex justify-between items-center shadow-md bg-[#f8f8f8] px-1">
 			<nav>
 				<button
-					className="noborder text-sky-600 p-2!"
+					className="noborder text-sky-600 p-2! ml-2!"
 					onClick={() => {
 						setShowManual(true);
 					}}
@@ -27,12 +30,14 @@ export const Header = ({ currentStation, maskedStationName, onChallengeButtonOnC
 				</button>
 			</nav>
 			<div className="flex flex-col items-center">
-				<p className="text-[30px] font-extrabold">
-					<span>{currentStation?.pref + ' '}</span>
-					<span className="text-[#f44336]" style={{ fontSize: currentStation?.name.length > 6 ? '20px' : 'auto' }}>
-						{maskedStationName}
+				<p className="text-[30px] font-extrabold flex flex-wrap gap-2 justify-center items-center">
+					<span>{currentStation?.pref}</span>
+					<span>
+						<span className="text-[#f44336]" style={{ fontSize: currentStation?.name.length >= 6 ? '20px' : 'auto' }}>
+							{maskedStationName}
+						</span>
+						駅？
 					</span>
-					駅？
 				</p>
 				<p className="text-[10px] font-extrabold">
 					elpwc.com/<span className="text-[#f44336]">EKI</span>wordle
@@ -40,7 +45,7 @@ export const Header = ({ currentStation, maskedStationName, onChallengeButtonOnC
 			</div>
 			<nav>
 				<button
-					className="noborder text-emerald-500 p-2!"
+					className="noborder text-emerald-500 p-2! mr-2!"
 					onClick={() => {
 						setShowRanking(true);
 					}}
