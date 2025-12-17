@@ -158,8 +158,8 @@ export const wordleCompare = (word1: string, word2: string): boolean[] => {
 };
 
 export const getShareText = (answers: Answer[], maskedPrefAndStationName: string, maxAnswerCount: number) => {
-	let res = '#駅Wordle\r\n';
-	res += `${maskedPrefAndStationName} (${answers.length}/${maxAnswerCount})\r\n`;
+	let res = '#駅Wordle';
+	res += ` ${maskedPrefAndStationName} (${answers.length}/${maxAnswerCount})\r\n`;
 	answers.forEach((answer) => {
 		if (answer.isPrefTheSame) {
 			res += '🟩';
