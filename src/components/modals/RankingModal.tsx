@@ -3,6 +3,7 @@ import { getQuestionsList, OrderType, updateQuestionAPI } from '@/utils/api';
 import { useEffect, useState } from 'react';
 import JapanStations from '@/assets/japanStationsDataWithoutUnused.json';
 import { getStationById } from '@/utils/utils';
+import { RingProgress } from '../RingProgress/RingProgress';
 
 interface Props {
 	show: boolean;
@@ -47,13 +48,19 @@ export const RankingModal = ({ show, onClose, onChallengeButtonOnClick }: Props)
 									})}
 								</p>
 							</div>
-							<div className="flex justify-between items-center">
-								<p>{`${stationInfo.pref} ${question.maskedStationName}駅`}</p>
-								<p>
-									正解率: {question.complete && question.challenge ? Math.round((question.complete / question.challenge) * 100) : 0}%
+							<div className="grid grid-cols-10 justify-between items-center">
+								<p className="col-span-6">{`${stationInfo.pref} ${question.maskedStationName}駅`}</p>
+								<p className="col-span-1">
+									{question.complete && question.challenge ? Math.round((question.complete / question.challenge) * 100) : 0}%
 									{/* ({question.complete || 0}/{question.challenge || 0}) */}
 								</p>
+								<RingProgress
+									className="col-span-1 w-4"
+									progress={question.complete && question.challenge ? Math.round((question.complete / question.challenge) * 100) : 0}
+									forecolor="green"
+								/>
 								<button
+									className="col-span-2"
 									style={{ margin: 0 }}
 									onClick={() => {
 										onChallengeButtonOnClick({ stationId: question.stationId, maskedStationName: question.maskedStationName });
