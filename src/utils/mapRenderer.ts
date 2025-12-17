@@ -151,12 +151,13 @@ export function renderElements(
 				if (el.tags?.operator.includes('旅客鉄道')) {
 					// JR
 					ctx.strokeStyle = 'black';
+					ctx.lineWidth = 3.5;
 					if (el.tags?.name) {
 						if (el.tags?.name.includes('新幹線')) {
 							ctx.strokeStyle = '#037771';
+							ctx.lineWidth = 4;
 						}
 					}
-					ctx.lineWidth = 3.5;
 					drawLine(ctx, el.geometry, projector);
 					ctx.strokeStyle = 'white';
 					ctx.lineWidth = 2;
@@ -169,6 +170,29 @@ export function renderElements(
 						ctx.strokeStyle = '#1f7197';
 						ctx.lineWidth = 2;
 						drawLine(ctx, el.geometry, projector);
+					} else if (el.tags?.railway === 'tram') {
+						// 路面電車
+						ctx.strokeStyle = '#64099e';
+						ctx.lineWidth = 1.5;
+						drawLine(ctx, el.geometry, projector);
+						ctx.lineWidth = 5;
+						ctx.setLineDash([5, 25]);
+						drawLine(ctx, el.geometry, projector);
+						ctx.setLineDash([]);
+					} else if (el.tags?.railway === 'light_rail') {
+						// light rail
+						ctx.strokeStyle = '#068862';
+						ctx.lineWidth = 2;
+						drawLine(ctx, el.geometry, projector);
+					} else if (el.tags?.railway === 'funicular') {
+						// ケーブル
+						ctx.strokeStyle = 'black';
+						ctx.lineWidth = 2;
+						drawLine(ctx, el.geometry, projector);
+						ctx.lineWidth = 5;
+						ctx.setLineDash([5, 25]);
+						drawLine(ctx, el.geometry, projector);
+						ctx.setLineDash([]);
 					} else {
 						// 私铁
 						ctx.strokeStyle = 'black';
@@ -182,10 +206,22 @@ export function renderElements(
 				}
 			}
 		}
+
+		//aerialway
+
+		if (el.type === 'way' && el.tags?.aerialway && el.geometry) {
+			ctx.strokeStyle = 'black';
+			ctx.lineWidth = 0.5;
+			drawLine(ctx, el.geometry, projector);
+			ctx.lineWidth = 3;
+			ctx.setLineDash([3, 15]);
+			drawLine(ctx, el.geometry, projector);
+			ctx.setLineDash([]);
+		}
 	});
 	elements.forEach((el) => {
 		ctx.fillStyle = '#c62828';
-		if (el.type === 'node' && el.tags?.railway === 'station') {
+		if (el.type === 'node' && (el.tags?.railway === 'station' || el.tags?.railway === 'tram_stop')) {
 			drawPoint(ctx, { lat: el.lat!, lon: el.lon! }, projector, 5);
 			ctx.fillStyle = 'black';
 			drawText(ctx, { lat: el.lat!, lon: el.lon! }, projector, '　' + (correctAnswer.name === el.tags?.name ? maskedStationName : getMaskedStationName(el.tags?.name)) + '駅');

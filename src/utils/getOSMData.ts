@@ -10,11 +10,13 @@ export const getOSMData = async (center: LatLon, radius: number = 3000, onDone: 
 
 (
   node["railway"="station"](around:${radius},${lat},${lon});
-  way["railway"="station"](around:${radius},${lat},${lon});
-  relation["railway"="station"](around:${radius},${lat},${lon});
+  node["railway"="tram_stop"](around:${radius},${lat},${lon});
 
   way["railway"](around:${radius},${lat},${lon});
   relation["railway"](around:${radius},${lat},${lon});
+
+  way["aerialway"](around:${radius},${lat},${lon});
+  relation["aerialway"](around:${radius},${lat},${lon});
 
   way["natural"="coastline"](around:${radius},${lat},${lon});
 

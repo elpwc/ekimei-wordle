@@ -96,7 +96,12 @@ export default function HomePage() {
 		// metro test, (京都駅)
 		// const lat = 34.987180;
 		// const lon = 135.757427;
-
+		// tram aerialway
+		//  const lat = 32.759619;
+		//  const lon = 129.865758;
+		// cablecar
+		// const lat = 35.631685;
+		// const lon = 139.2685;
 		clearInterval(interval1);
 
 		i = 0;
