@@ -6,9 +6,10 @@ import { RankingModal } from './modals/RankingModal';
 interface Props {
 	currentStation: (typeof JapanStations)[0];
 	maskedStationName: string;
+	onChallengeButtonOnClick: ({ stationId, maskedStationName }: { stationId: number; maskedStationName: string }) => void;
 }
 
-export const Header = ({ currentStation, maskedStationName }: Props) => {
+export const Header = ({ currentStation, maskedStationName, onChallengeButtonOnClick }: Props) => {
 	const [showManual, setShowManual] = useState(false);
 	const [showRanking, setShowRanking] = useState(false);
 	return (
@@ -50,7 +51,14 @@ export const Header = ({ currentStation, maskedStationName }: Props) => {
 				</button>
 			</nav>
 			<ManualModal show={showManual} onClose={() => setShowManual(false)} />
-			<RankingModal show={showRanking} onClose={() => setShowRanking(false)} />
+			<RankingModal
+				show={showRanking}
+				onClose={() => setShowRanking(false)}
+				onChallengeButtonOnClick={({ stationId, maskedStationName }: { stationId: number; maskedStationName: string }) => {
+					onChallengeButtonOnClick({ stationId, maskedStationName });
+					setShowRanking(false);
+				}}
+			/>
 		</header>
 	);
 };

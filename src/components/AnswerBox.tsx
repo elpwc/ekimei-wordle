@@ -1,13 +1,12 @@
 import { Answer } from '@/utils/types';
-import JapanStations from '@/assets/japanStationsDataWithoutUnused.json';
-import { getDistanceBorderColor, getEmojiFromDegree } from '@/utils/utils';
+import { getDistanceBorderColor, getEmojiFromDegree, getStationById } from '@/utils/utils';
 
 interface Props {
 	answer: Answer;
 }
 
 export const AnswerBox = ({ answer }: Props) => {
-	const station = JapanStations[answer.stationId];
+	const station = getStationById(answer.stationId);
 	return (
 		<div className="rounded-[4px] w-full p-0 grid grid-cols-12 grid- items-center gap-0.5 bg-[#ffffff9e] backdrop-blur-[8px]">
 			<div className="col-span-3 flex flex-col items-center justify-center gap-0.5">

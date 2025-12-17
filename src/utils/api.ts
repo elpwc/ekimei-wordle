@@ -21,6 +21,7 @@ export const getQuestionsList = async ({
 	complete = -1,
 	maskedStationName = '',
 	showAt,
+	before,
 	orderBy = OrderType.createDate,
 	limit = 20,
 	asc = false,
@@ -31,6 +32,7 @@ export const getQuestionsList = async ({
 	complete?: number;
 	maskedStationName?: string;
 	showAt?: Date;
+	before?: Date;
 	orderBy?: OrderType;
 	limit?: number;
 	asc?: boolean;
@@ -42,6 +44,7 @@ export const getQuestionsList = async ({
 	if (challenge >= 0) params.append('challenge', String(challenge));
 	if (complete >= 0) params.append('complete', String(complete));
 	if (showAt) params.append('showAt', getJstDateString(showAt));
+	if (before) params.append('before', getJstDateString(before));
 	if (orderBy !== OrderType.none) params.append('orderBy', orderBy);
 	if (maskedStationName !== '') params.append('maskedStationName', maskedStationName);
 	if (limit >= 0) params.append('limit', String(limit));

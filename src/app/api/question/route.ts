@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
 	const challenge = searchParams.get('challenge') ? Number(searchParams.get('challenge')) : 0;
 	const complete = searchParams.get('complete') ? Number(searchParams.get('complete')) : 0;
 	const day = searchParams.get('showAt'); // YYYY-MM-DD
+	const before = searchParams.get('before'); // YYYY-MM-DD
 	const maskedStationName = searchParams.get('maskedStationName');
 	const orderBy = searchParams.get('orderBy'); // challenge | complete | date
 	const asc = searchParams.get('asc') === 'asc' ? 'asc' : 'desc'; // asc | desc
@@ -35,10 +36,16 @@ export async function GET(req: NextRequest) {
 			lt: endUtc,
 		};
 	}
+	if (before) {
+		const { startUtc, endUtc } = getUtcRangeFromJstDay(before);
+		where.showAt = {
+			lte: new Date(startUtc.setHours(23, 0, 0, 0)),
+		};
+	}
 
 	let questions = await prisma.questions.findMany({
 		where,
-		orderBy: orderBy === 'challenge' ? { challenge: asc } : orderBy === 'complete' ? { complete: asc } : { showAt: asc },
+		orderBy: orderBy === 'challenge' ? { challenge: asc } : orderBy === 'complete' ? { complete: asc } : orderBy === 'createDate' ? { createdAt: asc } : { showAt: asc },
 		skip,
 		take: limit,
 

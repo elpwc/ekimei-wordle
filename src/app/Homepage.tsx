@@ -3,8 +3,7 @@
 import { getOSMData } from '@/utils/getOSMData';
 import { renderOSM } from '@/utils/mapRenderer';
 import { useEffect, useRef, useState } from 'react';
-import JapanStations from '@/assets/japanStationsDataWithoutUnused.json';
-import { distanceAndBearing, getMaskedStationName, getRandomStationId, getShareText, wordleCompare } from '@/utils/utils';
+import { distanceAndBearing, getMaskedStationName, getRandomStationId, getShareText, getStationById, wordleCompare } from '@/utils/utils';
 import { useHint } from '@/components/HintProvider';
 import { Answer, AnswerStatus } from '@/utils/types';
 import { AnswerList } from '@/components/AnswerList';
@@ -12,6 +11,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import dynamic from 'next/dynamic';
 import { getQuestionsList, updateQuestionChallengeInfo } from '@/utils/api';
+import JapanStations from '@/assets/japanStationsDataWithoutUnused.json';
 
 const ParticlesBg = dynamic(() => import('particles-bg'), {
 	ssr: false,
@@ -29,7 +29,7 @@ export default function HomePage() {
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
 	const [tips, setTips] = useState('');
-	const [currentStation, setCurrentStation] = useState<(typeof JapanStations)[0]>({ name: '', com: '', line: '', exist: true, coord: [141.331919, 43.070748], pref: '', muni: '札幌市' });
+	const [currentStationId, setCurrentStationId] = useState<number>(-1);
 	const [answers, setAnswers] = useState<Answer[]>([]);
 	const [maskedStationName, setMaskedStationName] = useState('');
 	const [textboxText, setTextboxText] = useState('');
@@ -50,11 +50,28 @@ export default function HomePage() {
 		}
 	}, [openURL]);
 
-	const initGame = async (doGetIdFromServer: boolean = true) => {
+	enum GameStartType {
+		/** デイリー */
+		IdFromServer,
+		/** ランダム */
+		RandomId,
+		/** 指定されたstationId */
+		SpecifiedId,
+		/** デイリーすでに完成、ふたたび開けるとき */
+		DailyHasBeenPlayed,
+	}
+
+	const initGame = async (
+		{ gameStartType, stationId, maskedStationName }: { gameStartType?: GameStartType; stationId?: number; maskedStationName?: string } = {
+			gameStartType: GameStartType.IdFromServer,
+		}
+	) => {
 		const ctx = canvasRef.current?.getContext('2d');
 		ctx?.clearRect(0, 0, canvasRef.current?.width || 1000, canvasRef.current?.height || 1000);
-		setAnswers([]);
-		setGameStatus(GameStatus.Playing);
+		if (gameStartType !== GameStartType.DailyHasBeenPlayed) {
+			setAnswers([]);
+			setGameStatus(GameStatus.Playing);
+		}
 		setTextboxText('');
 		setCandidate([]);
 		setDailyId(-1);
@@ -69,8 +86,8 @@ export default function HomePage() {
 		}, 200);
 
 		let todaysStationId = getRandomStationId();
-		let todaysStationMaskedName = getMaskedStationName(JapanStations[todaysStationId].name);
-		if (doGetIdFromServer) {
+		let todaysStationMaskedName = getMaskedStationName(getStationById(todaysStationId).name);
+		if (gameStartType === GameStartType.IdFromServer || gameStartType === GameStartType.DailyHasBeenPlayed) {
 			const todaysStationInfos = await getQuestionsList({ showAt: new Date() });
 			//console.log(todaysStationInfos);
 
@@ -79,12 +96,23 @@ export default function HomePage() {
 				todaysStationMaskedName = todaysStationInfos[0].maskedStationName;
 				setDailyId(todaysStationInfos[0].id);
 			}
+		} else if (gameStartType === GameStartType.SpecifiedId) {
+			todaysStationId = stationId ?? 0;
+			todaysStationMaskedName = maskedStationName ?? 'ERROR';
 		}
 
-		const randomStation = JapanStations[todaysStationId]; //JapanStations[getRandomStationId()];
+		const randomStation = getStationById(todaysStationId); //getStationById(getRandomStationId()];
 		//console.log(randomStation);
-		setCurrentStation(randomStation);
+		setCurrentStationId(todaysStationId);
 		setMaskedStationName(todaysStationMaskedName);
+
+		if (gameStartType === GameStartType.DailyHasBeenPlayed) {
+			const answerTexts = localStorage.getItem('dailyAnswers')?.split(',');
+			answerTexts?.forEach((answerText) => {
+				handleAnswer(answerText, todaysStationId);
+			});
+		}
+
 		const radius = 2500;
 		// 新杉田 coastline test
 		// const lat = 35.3868;
@@ -143,16 +171,30 @@ export default function HomePage() {
 	};
 
 	useEffect(() => {
-		initGame();
+		const dailySitu = localStorage.getItem('daily');
+		if (dailySitu === null) {
+			initGame();
+		} else {
+			if (dailySitu === 'passed') {
+				setGameStatus(GameStatus.Correct);
+			} else if (dailySitu === 'failed') {
+				setGameStatus(GameStatus.Failed);
+			}
+
+			initGame({ gameStartType: GameStartType.DailyHasBeenPlayed });
+		}
 	}, []);
 
-	useEffect(() => {
-		console.log(answers);
-	}, [answers]);
+	// useEffect(() => {
+	// 	console.log(answers);
+	// }, [answers]);
 
-	const handleAnswer = (answer: string) => {
+	const handleAnswer = (answer: string, correctStationId: number = currentStationId) => {
 		let closestDistance = 500000;
 		let closestId = -1;
+
+		const currentStation = getStationById(correctStationId);
+
 		JapanStations.forEach((station, index) => {
 			if (station.name === answer) {
 				const { distanceKm } = distanceAndBearing(currentStation.coord as [number, number], station.coord as [number, number]);
@@ -176,60 +218,82 @@ export default function HomePage() {
 					hint('top', `正解は「${currentStation.name}駅」でしたー`, 'orange');
 					if (dailyId !== -1) {
 						updateQuestionChallengeInfo(dailyId, false).then(() => {});
+						//console.log(answers);
+						localStorage.setItem(
+							'dailyAnswers',
+							[
+								...answers.map((ans) => {
+									return ans.answerText;
+								}),
+								getStationById(findIndex).name,
+							].join(',')
+						);
+						localStorage.setItem('daily', 'failed');
 					}
 				}
 
-				const { distanceKm, bearingDeg } = distanceAndBearing(currentStation.coord as [number, number], JapanStations[findIndex].coord as [number, number]);
+				const { distanceKm, bearingDeg } = distanceAndBearing(currentStation.coord as [number, number], getStationById(findIndex).coord as [number, number]);
 
 				setAnswers((prev) => [
 					...prev,
 					{
-						answerText: textboxText,
+						answerText: getStationById(findIndex).name,
 						stationId: findIndex,
 						distanceKm,
 						bearingDeg,
 						status: [AnswerStatus.OutOfPref],
-						isPrefTheSame: currentStation.pref === JapanStations[findIndex].pref,
-						isMuniTheSame: currentStation.muni === JapanStations[findIndex].muni,
-						isComTheSame: currentStation.com === JapanStations[findIndex].com,
-						isLineTheSame: currentStation.line === JapanStations[findIndex].line,
-						isStationTheSame: currentStation.name === JapanStations[findIndex].name,
-						prefCharStatus: wordleCompare(JapanStations[findIndex].pref ?? '', currentStation.pref ?? ''),
-						muniCharStatus: wordleCompare(JapanStations[findIndex].muni ?? '', currentStation.muni ?? ''),
-						comCharStatus: wordleCompare(JapanStations[findIndex].com, currentStation.com),
-						lineCharStatus: wordleCompare(JapanStations[findIndex].line, currentStation.line),
-						stationCharStatus: wordleCompare(JapanStations[findIndex].name, currentStation.name),
+						isPrefTheSame: currentStation.pref === getStationById(findIndex).pref,
+						isMuniTheSame: currentStation.muni === getStationById(findIndex).muni,
+						isComTheSame: currentStation.com === getStationById(findIndex).com,
+						isLineTheSame: currentStation.line === getStationById(findIndex).line,
+						isStationTheSame: currentStation.name === getStationById(findIndex).name,
+						prefCharStatus: wordleCompare(getStationById(findIndex).pref ?? '', currentStation.pref ?? ''),
+						muniCharStatus: wordleCompare(getStationById(findIndex).muni ?? '', currentStation.muni ?? ''),
+						comCharStatus: wordleCompare(getStationById(findIndex).com, currentStation.com),
+						lineCharStatus: wordleCompare(getStationById(findIndex).line, currentStation.line),
+						stationCharStatus: wordleCompare(getStationById(findIndex).name, currentStation.name),
 					} as Answer,
 				]);
 			}
 		} else {
 			// 正解~
-			const { distanceKm, bearingDeg } = distanceAndBearing(currentStation.coord as [number, number], JapanStations[findIndex].coord as [number, number]);
+			const { distanceKm, bearingDeg } = distanceAndBearing(currentStation.coord as [number, number], getStationById(findIndex).coord as [number, number]);
 
 			setAnswers((prev) => [
 				...prev,
 				{
-					answerText: textboxText,
+					answerText: getStationById(findIndex).name,
 					stationId: findIndex,
 					distanceKm,
 					bearingDeg,
 					status: [AnswerStatus.OutOfPref],
-					isPrefTheSame: currentStation.pref === JapanStations[findIndex].pref,
-					isMuniTheSame: currentStation.muni === JapanStations[findIndex].muni,
-					isComTheSame: currentStation.com === JapanStations[findIndex].com,
-					isLineTheSame: currentStation.line === JapanStations[findIndex].line,
-					isStationTheSame: currentStation.name === JapanStations[findIndex].name,
-					prefCharStatus: wordleCompare(JapanStations[findIndex].pref ?? '', currentStation.pref ?? ''),
-					muniCharStatus: wordleCompare(JapanStations[findIndex].muni ?? '', currentStation.muni ?? ''),
-					comCharStatus: wordleCompare(JapanStations[findIndex].com, currentStation.com),
-					lineCharStatus: wordleCompare(JapanStations[findIndex].line, currentStation.line),
-					stationCharStatus: wordleCompare(JapanStations[findIndex].name, currentStation.name),
+					isPrefTheSame: currentStation.pref === getStationById(findIndex).pref,
+					isMuniTheSame: currentStation.muni === getStationById(findIndex).muni,
+					isComTheSame: currentStation.com === getStationById(findIndex).com,
+					isLineTheSame: currentStation.line === getStationById(findIndex).line,
+					isStationTheSame: currentStation.name === getStationById(findIndex).name,
+					prefCharStatus: wordleCompare(getStationById(findIndex).pref ?? '', currentStation.pref ?? ''),
+					muniCharStatus: wordleCompare(getStationById(findIndex).muni ?? '', currentStation.muni ?? ''),
+					comCharStatus: wordleCompare(getStationById(findIndex).com, currentStation.com),
+					lineCharStatus: wordleCompare(getStationById(findIndex).line, currentStation.line),
+					stationCharStatus: wordleCompare(getStationById(findIndex).name, currentStation.name),
 				} as Answer,
 			]);
 
 			setGameStatus(GameStatus.Correct);
 			if (dailyId !== -1) {
 				updateQuestionChallengeInfo(dailyId, true).then(() => {});
+				//console.log(answers);
+				localStorage.setItem(
+					'dailyAnswers',
+					[
+						...answers.map((ans) => {
+							return ans.answerText;
+						}),
+						getStationById(findIndex).name,
+					].join(',')
+				);
+				localStorage.setItem('daily', 'passed');
 			}
 			hint('top', '🎊正解！🎉', 'green');
 		}
@@ -237,7 +301,13 @@ export default function HomePage() {
 
 	return (
 		<>
-			<Header currentStation={currentStation} maskedStationName={maskedStationName} />
+			<Header
+				currentStation={getStationById(currentStationId)}
+				maskedStationName={maskedStationName}
+				onChallengeButtonOnClick={({ stationId, maskedStationName }: { stationId: number; maskedStationName: string }) => {
+					initGame({ gameStartType: GameStartType.SpecifiedId, stationId, maskedStationName });
+				}}
+			/>
 			<main className="flex justify-center pt-2 mb-2">
 				<div className="max-w-[400px] px-2">
 					<div className="border-0 border-[#cccccc] w-fit bg-white shadow-md">
@@ -254,9 +324,9 @@ export default function HomePage() {
 									<div className="my-4 px-4 py-2 rounded-xl bg-lime-200 shadow-md">
 										<p>⭕正解は、</p>
 										<div>
-											<p className=" w-full text-center answerText answerTextSmall">{currentStation.com + ' ' + currentStation.line}</p>
-											<p className="text-center text-[20px] font-extrabold">{currentStation.name}駅</p>
-											<p className=" w-full text-center answerText answerTextSmall">{currentStation.pref + ' ' + currentStation.muni}</p>
+											<p className=" w-full text-center answerText answerTextSmall">{getStationById(currentStationId).com + ' ' + getStationById(currentStationId).line}</p>
+											<p className="text-center text-[20px] font-extrabold">{getStationById(currentStationId).name}駅</p>
+											<p className=" w-full text-center answerText answerTextSmall">{getStationById(currentStationId).pref + ' ' + getStationById(currentStationId).muni}</p>
 										</div>
 										<p className="w-full text-right">でした！</p>
 									</div>
@@ -269,7 +339,7 @@ export default function HomePage() {
 									className="w-full primary green py-4! flex items-center justify-center gap-2"
 									onClick={() => {
 										navigator.clipboard
-											.writeText(getShareText(answers, currentStation?.pref + ' ' + maskedStationName + '駅？', maxAnswerCount))
+											.writeText(getShareText(answers, getStationById(currentStationId)?.pref + ' ' + maskedStationName + '駅？', maxAnswerCount))
 											.then(() => hint('top', 'コピーしました！'))
 											.catch((err) => hint('top', 'コピーできませんでした...', 'red', 2000));
 									}}
@@ -282,7 +352,7 @@ export default function HomePage() {
 								<button
 									className="w-full primary py-4! flex items-center justify-center gap-2 bg-[#4caf50]! hover:bg-[#237127]!"
 									onClick={() => {
-										initGame(false);
+										initGame({ gameStartType: GameStartType.RandomId });
 									}}
 								>
 									もう一局！
@@ -291,7 +361,11 @@ export default function HomePage() {
 									<button
 										className="w-full flex items-center justify-center gap-2"
 										onClick={() => {
-											setOpenURL(`https://www.google.com/maps?q=${currentStation.name}駅@${currentStation.coord[1]},${currentStation.coord[0]}`);
+											setOpenURL(
+												`https://www.google.com/maps?q=${getStationById(currentStationId).name}駅@${getStationById(currentStationId).coord[1]},${
+													getStationById(currentStationId).coord[0]
+												}`
+											);
 										}}
 									>
 										<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -302,7 +376,7 @@ export default function HomePage() {
 									<button
 										className="w-full flex items-center justify-center gap-2"
 										onClick={() => {
-											setOpenURL(`https://ja.wikipedia.org/wiki/${currentStation.name}駅`);
+											setOpenURL(`https://ja.wikipedia.org/wiki/${getStationById(currentStationId).name}駅`);
 										}}
 									>
 										<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -332,7 +406,7 @@ export default function HomePage() {
 											let count = 0;
 											let tempCandidate = [];
 											tempCandidate = JapanStations.filter((station) => {
-												const judge = station.pref === currentStation.pref && station.name.includes(text);
+												const judge = station.pref === getStationById(currentStationId).pref && station.name.includes(text);
 												if (judge) {
 													count++;
 												}
@@ -342,7 +416,7 @@ export default function HomePage() {
 												tempCandidate = [
 													...tempCandidate,
 													...JapanStations.filter((station) => {
-														const judge = station.pref === currentStation.pref && (station.com.includes(text) || station.line.includes(text));
+														const judge = station.pref === getStationById(currentStationId).pref && (station.com.includes(text) || station.line.includes(text));
 														if (judge) {
 															count++;
 														}
@@ -354,7 +428,7 @@ export default function HomePage() {
 												tempCandidate = [
 													...tempCandidate,
 													...JapanStations.filter((station) => {
-														const judge = station.pref !== currentStation.pref && station.name.includes(text);
+														const judge = station.pref !== getStationById(currentStationId).pref && station.name.includes(text);
 														if (judge) {
 															count++;
 														}
@@ -366,7 +440,7 @@ export default function HomePage() {
 												tempCandidate = [
 													...tempCandidate,
 													...JapanStations.filter((station) => {
-														const judge = station.pref !== currentStation.pref && (station.com.includes(text) || station.line.includes(text));
+														const judge = station.pref !== getStationById(currentStationId).pref && (station.com.includes(text) || station.line.includes(text));
 														if (judge) {
 															count++;
 														}

@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma';
-import { getMaskedStationName, getRandomStationId } from './utils';
+import { getMaskedStationName, getRandomStationId, getStationById } from './utils';
 import JapanStations from '@/assets/japanStationsDataWithoutUnused.json';
 
 export async function updateDailyQuestion(updateDate?: Date) {
@@ -21,7 +21,7 @@ export async function updateDailyQuestion(updateDate?: Date) {
 		if (thisDaysQuestion.length === 0) {
 			const createData: any = {
 				stationId,
-				name: JapanStations[stationId].name,
+				name: getStationById(stationId).name,
 				maskedStationName,
 				showAt: new Date(date.setHours(0, 0, 0, 0)),
 			};
@@ -39,20 +39,20 @@ export async function updateDailyQuestion(updateDate?: Date) {
 
 	if (updateDate) {
 		const stationId1 = getRandomStationId();
-		const stationInfo1 = JapanStations[stationId1];
+		const stationInfo1 = getStationById(stationId1);
 		const maskedStationName1 = getMaskedStationName(stationInfo1.name);
 
 		const today = updateDate;
 		setRandomQues(today, stationId1, maskedStationName1, (doCreated1) => {});
 	} else {
 		const stationId1 = getRandomStationId();
-		const stationInfo1 = JapanStations[stationId1];
+		const stationInfo1 = getStationById(stationId1);
 		const maskedStationName1 = getMaskedStationName(stationInfo1.name);
 
 		const today = new Date();
 		setRandomQues(today, stationId1, maskedStationName1, (doCreated1) => {
 			const stationId2 = getRandomStationId();
-			const stationInfo2 = JapanStations[stationId2];
+			const stationInfo2 = getStationById(stationId2);
 			const maskedStationName2 = getMaskedStationName(stationInfo2.name);
 
 			const tomorrow = new Date(today);

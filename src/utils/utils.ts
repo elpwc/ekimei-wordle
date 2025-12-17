@@ -1,4 +1,4 @@
-import { Answer, LatLon } from './types';
+import { Answer } from './types';
 import JapanStations from '@/assets/japanStationsDataWithoutUnused.json';
 
 export const getRandomStationId = () => {
@@ -217,3 +217,11 @@ export function getUtcRangeFromJstDay(jstDay: string) {
 	const endUtc = new Date(Date.UTC(y, m - 1, d + 1, 0, 0, 0, 0));
 	return { startUtc, endUtc };
 }
+
+export const getStationById = (stationId: number) => {
+	if (stationId >= 0 && stationId < JapanStations.length) {
+		return JapanStations[stationId];
+	} else {
+		return { name: '', com: '', line: '', exist: true, coord: [137.991107, 36.016177] /* 日本中心 */, pref: '', muni: '' };
+	}
+};
