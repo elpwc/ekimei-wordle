@@ -153,6 +153,7 @@ export default function HomePage() {
 					if (canvasRef.current && ctx) {
 						clearInterval(interval2);
 						setTips('地図レンダリング中...');
+						ctx?.clearRect(0, 0, canvasRef.current?.width || 1000, canvasRef.current?.height || 1000);
 						renderOSM(canvasRef.current, ctx, data, { center: { lat, lon }, scale: 10000 }, true, randomStation, todaysStationMaskedName);
 						setTips('');
 					}
