@@ -488,8 +488,11 @@ export default function HomePage() {
 												handleAnswer(candidate.name);
 											}}
 										>
-											<p className="text-[8px]">{candidate.com.length > 6 ? candidate.com.substring(0, 6) + '..' : candidate.com}</p>
-											<p className="text-[14px] font-extrabold">{candidate.name}駅</p>
+											<div className="grid grid-cols-2 gap-1">
+												<p className="text-[8px]">{candidate.com.length > 6 ? candidate.com.substring(0, 6) + '..' : candidate.com}</p>
+												<p className="text-[8px]">{(candidate.muni || '').length > 6 ? (candidate.muni || '').substring(0, 6) + '..' : candidate.muni || ''}</p>
+											</div>
+											<p className="text-[14px] font-extrabold text-center w-full">{candidate.name}駅</p>
 										</div>
 									);
 								})}
