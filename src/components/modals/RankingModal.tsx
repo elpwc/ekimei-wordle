@@ -16,7 +16,7 @@ export const RankingModal = ({ show, onClose, onChallengeButtonOnClick }: Props)
 
 	useEffect(() => {
 		getQuestionsList({
-			before: new Date('2025-12-18'),
+			before: new Date(),
 			limit: 100,
 			orderBy: OrderType.date,
 			asc: false,

@@ -3,7 +3,7 @@
 import { getOSMData } from '@/utils/getOSMData';
 import { renderOSM } from '@/utils/mapRenderer';
 import { useEffect, useRef, useState } from 'react';
-import { distanceAndBearing, getMaskedStationName, getRandomStationId, getShareText, getStationById, wordleCompare } from '@/utils/utils';
+import { distanceAndBearing, getJstDateString, getMaskedStationName, getRandomStationId, getShareText, getStationById, getUtcRangeFromJstDay, wordleCompare } from '@/utils/utils';
 import { useHint } from '@/components/HintProvider';
 import { Answer, AnswerStatus } from '@/utils/types';
 import { AnswerList } from '@/components/AnswerList';
@@ -173,13 +173,27 @@ export default function HomePage() {
 
 	useEffect(() => {
 		const dailySitu = localStorage.getItem('daily');
+		const dailyDate = localStorage.getItem('dailyDate') ?? '';
 		if (dailySitu === null) {
 			initGame();
 		} else {
-			if (dailySitu === 'passed') {
-				setGameStatus(GameStatus.Correct);
-			} else if (dailySitu === 'failed') {
-				setGameStatus(GameStatus.Failed);
+			if (dailyDate !== '') {
+				initGame();
+			} else {
+				const today = new Date();
+				if (
+					Number(dailyDate.split('-')[0]) === Number(today.getFullYear()) &&
+					Number(dailyDate.split('-')[1]) === Number(today.getMonth() + 1) &&
+					Number(dailyDate.split('-')[1]) === Number(today.getDate())
+				) {
+					if (dailySitu === 'passed') {
+						setGameStatus(GameStatus.Correct);
+					} else if (dailySitu === 'failed') {
+						setGameStatus(GameStatus.Failed);
+					}
+				} else {
+					initGame();
+				}
 			}
 
 			initGame({ gameStartType: GameStartType.DailyHasBeenPlayed });
@@ -230,6 +244,7 @@ export default function HomePage() {
 							].join(',')
 						);
 						localStorage.setItem('daily', 'failed');
+						localStorage.setItem('dailyDate', getJstDateString(new Date()));
 					}
 				}
 
@@ -295,6 +310,7 @@ export default function HomePage() {
 					].join(',')
 				);
 				localStorage.setItem('daily', 'passed');
+				localStorage.setItem('dailyDate', getJstDateString(new Date()));
 			}
 			hint('top', '🎊正解！🎉', 'green');
 		}
