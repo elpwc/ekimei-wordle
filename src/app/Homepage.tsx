@@ -325,7 +325,7 @@ export default function HomePage() {
 					initGame({ gameStartType: GameStartType.SpecifiedId, stationId, maskedStationName });
 				}}
 			/>
-			<main className="flex justify-center pt-2 mb-2">
+			<main className="flex flex-1 justify-center pt-2 mb-2">
 				<div className="max-w-[400px] px-2">
 					<div className="border-0 border-[#cccccc] w-fit bg-white shadow-md">
 						<canvas className="w-full" ref={canvasRef} width={400} height={300} />
